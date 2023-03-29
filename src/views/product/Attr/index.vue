@@ -1,17 +1,11 @@
 <template>
-    <div>
-        平台属性管理
-    </div>
+	<div>平台属性管理</div>
 </template>
-
 
 <script>
 export default {
-    name: "Attr",
-}
+	name: "Attr",
+};
 </script>
 
-
-<style lang="" scoped>
-    
-</style>
+<style lang="" scoped></style>

@@ -1,17 +1,11 @@
 <template>
-    <div>
-        Spu管理
-    </div>
+	<div>Spu管理</div>
 </template>
-
 
 <script>
 export default {
-    name: "Spu",
-}
+	name: "Spu",
+};
 </script>
 
-
-<style lang="" scoped>
-    
-</style>
+<style lang="" scoped></style>

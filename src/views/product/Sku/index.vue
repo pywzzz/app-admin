@@ -1,17 +1,11 @@
 <template>
-    <div>
-        Sku管理
-    </div>
+	<div>Sku管理</div>
 </template>
-
 
 <script>
 export default {
-    name: "Sku",
-}
+	name: "Sku",
+};
 </script>
 
-
-<style lang="" scoped>
-    
-</style>
+<style lang="" scoped></style>
