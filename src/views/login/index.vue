@@ -1,5 +1,7 @@
 <template>
   <div class="login-container">
+    <!-- 这是elementUI的一个组件，用于展示表单元素 -->
+    <!-- :rules 用于校验表单元素，是elementUI中自带的个属性 -->
     <el-form
       ref="loginForm"
       :model="loginForm"
@@ -9,9 +11,10 @@
       label-position="left"
     >
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">登录</h3>
       </div>
 
+      <!-- 账号框 -->
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -27,6 +30,7 @@
         />
       </el-form-item>
 
+      <!-- 密码框 -->
       <el-form-item prop="password">
         <span class="svg-container">
           <svg-icon icon-class="password" />
@@ -49,12 +53,13 @@
         </span>
       </el-form-item>
 
+      <!-- 登录按钮 -->
       <el-button
         :loading="loading"
         type="primary"
         style="width: 100%; margin-bottom: 30px"
         @click.native.prevent="handleLogin"
-        >Login</el-button
+        >登录</el-button
       >
 
       <div class="tips">
@@ -122,14 +127,21 @@ export default {
         this.$refs.password.focus();
       });
     },
+    // 点登录按钮触发的事件
     handleLogin() {
+      // 验证用户名和密码这两个表单元素是否符合规则
       this.$refs.loginForm.validate((valid) => {
+        // 符合验证规则
         if (valid) {
+          // 开始加载动画
           this.loading = true;
+          // 带着用户输入的，且经过校验的loginForm，派发一个叫 user/login 的actions
           this.$store
             .dispatch("user/login", this.loginForm)
             .then(() => {
+              // 路由跳转
               this.$router.push({ path: this.redirect || "/" });
+              // 结束加载动画
               this.loading = false;
             })
             .catch(() => {

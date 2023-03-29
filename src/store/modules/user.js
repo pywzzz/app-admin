@@ -28,8 +28,8 @@ const mutations = {
 };
 
 const actions = {
-  // user login
-  login({ commit }, userInfo) {
+  // 原始写法
+  /* login({ commit }, userInfo) {
     const { username, password } = userInfo;
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password })
@@ -42,7 +42,21 @@ const actions = {
         .catch((error) => {
           reject(error);
         });
-    });
+    }); */
+
+  // async配合await的写法
+  // 登录
+  async login({ commit }, userInfo) {
+    // 解构数据
+    const { username, password } = userInfo;
+    let result = await login({ username: username.trim(), password: password });
+    if (result.code == 20000) {
+      commit("SET_TOKEN", result.data.token);
+      setToken(result.data.token);
+      return "ok";
+    } else {
+      return Promise.reject(new Error("fail"));
+    }
   },
 
   // get user info

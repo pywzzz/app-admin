@@ -36,7 +36,13 @@ module.exports = {
       warnings: false,
       errors: true,
     },
-    before: require("./mock/mock-server.js"),
+    proxy: {
+      // 在 .env.development 文件中规定了前缀为 /dev-api
+      "/dev-api": {
+        target: "http://gmall-h5-api.atguigu.cn",
+        pathRewrite: { "^/dev-api": "" },
+      },
+    },
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
