@@ -11,3 +11,10 @@ export const reqCategory2List = (category1Id) =>
 //获取三级分类数据接口
 export const reqCategory3List = (category2Id) =>
 	request({ url: `/admin/product/getCategory3/${category2Id}`, method: "get" });
+
+//带着三级列表的id获取相应数据
+export const reqAttrList = (category1Id, category2Id, category3Id) =>
+	request({
+		url: `/admin/product/attrInfoList/${category1Id}/${category2Id}/${category3Id}`,
+		method: "get",
+	});

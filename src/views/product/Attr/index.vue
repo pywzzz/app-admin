@@ -4,7 +4,40 @@
 			<!-- 用自定义事件@getCategoryId实现子组件CategorySelect向父组件Attr传参 -->
 			<CategorySelect @getCategoryId="getCategoryId"></CategorySelect>
 		</el-card>
-		<el-card></el-card>
+		<el-card>
+			<el-button type="primary" icon="el-icon-plus">添加属性</el-button>
+			<el-table style="width: 100%" border :data="attrList">
+				<el-table-column type="index" label="序号" width="80" align="center">
+				</el-table-column>
+				<el-table-column prop="attrName" label="属性名称" width="150">
+				</el-table-column>
+				<el-table-column prop="prop" label="属性值列表" width="width">
+					<template slot-scope="{ row }">
+						<el-tag
+							type="success"
+							style="margin: 0px 10px"
+							v-for="attrValue in row.attrValueList"
+							:key="attrValue.id"
+							>{{ attrValue.valueName }}</el-tag
+						>
+					</template>
+				</el-table-column>
+				<el-table-column prop="prop" label="操作" width="150">
+					<template slot-scope="{ row }">
+						<el-button
+							type="warning"
+							size="mini"
+							icon="el-icon-edit"
+						></el-button>
+						<el-button
+							type="danger"
+							size="mini"
+							icon="el-icon-delete"
+						></el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+		</el-card>
 	</div>
 </template>
 
@@ -16,6 +49,8 @@ export default {
 			category1Id: "",
 			category2Id: "",
 			category3Id: "",
+			//存由三级列表筛后的，产品数据
+			attrList: [],
 		};
 	},
 	methods: {
@@ -35,7 +70,19 @@ export default {
 				this.getAttrList();
 			}
 		},
-		getAttrList() {},
+		async getAttrList() {
+			//获取分类的ID
+			const { category1Id, category2Id, category3Id } = this;
+			//获取属性列表的数据
+			let result = await this.$API.attr.reqAttrList(
+				category1Id,
+				category2Id,
+				category3Id
+			);
+			if (result.code == 200) {
+				this.attrList = result.data;
+			}
+		},
 	},
 };
 </script>
