@@ -26,3 +26,10 @@ export const reqAddOrUpdateTrademark = (trademark) => {
 		});
 	}
 };
+
+// 删除品牌数据
+export const reqDeleteTrademark = (id) =>
+	request({
+		url: `/admin/product/baseTrademark/remove/${id}`,
+		method: "delete",
+	});

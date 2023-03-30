@@ -48,7 +48,11 @@
 						@click="updateTrademark(row)"
 						>修改</el-button
 					>
-					<el-button type="danger" size="mini" icon="el-icon-delete"
+					<el-button
+						type="danger"
+						size="mini"
+						icon="el-icon-delete"
+						@click="deleteTrademark(row)"
 						>删除</el-button
 					>
 				</template>
@@ -235,6 +239,35 @@ export default {
 					return false;
 				}
 			});
+		},
+		deleteTrademark(row) {
+			// 弹框
+			this.$confirm(`确定删除“${row.tmName}”吗？`, "提示", {
+				confirmButtonText: "确定",
+				cancelButtonText: "取消",
+				type: "warning",
+			})
+				.then(async () => {
+					// 点击“取消”按钮触发then
+					await this.$API.trademark.reqDeleteTrademark(row.id);
+					this.$message({
+						type: "success",
+						message: "删除成功!",
+					});
+					// 如果是本页的数据个数大于1，则停留在当前页，否则停在前一页
+					this.handleCurrentChange(
+						this.list.lenght > 1 ? this.page : this.page - 1
+					);
+					// 弄完后重新获取数据以供展示
+					this.getPageList();
+				})
+				.catch(() => {
+					// 点击“确定”按钮触发catch
+					this.$message({
+						type: "info",
+						message: "已取消删除",
+					});
+				});
 		},
 	},
 	mounted() {
