@@ -66,8 +66,8 @@ export const constantRoutes = [
 		children: [
 			{
 				path: "trademark",
-				name: "TradeMark",
-				component: () => import("@/views/product/tradeMark"),
+				name: "Trademark",
+				component: () => import("@/views/product/Trademark"),
 				meta: { title: "品牌管理" },
 			},
 			{

@@ -64,7 +64,7 @@
 
 <script>
 export default {
-	name: "tradeMark",
+	name: "Trademark",
 	data() {
 		return {
 			// 当前第几页
