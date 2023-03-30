@@ -37,16 +37,21 @@
 				</template>
 			</el-table-column>
 			<el-table-column prop="prop" label="操作" width="width">
-				<el-button
-					type="warning"
-					size="mini"
-					icon="el-icon-edit"
-					@click="updateTrademark"
-					>修改</el-button
-				>
-				<el-button type="danger" size="mini" icon="el-icon-delete"
-					>删除</el-button
-				>
+				<!-- 人父组件el-table回传的数据以对象的形式放在了一个叫row的对象中，这儿解构一下 -->
+				<!-- 父组件的 :data 相当于v-for，则这儿的row相当于v-for中的每一个item -->
+				<!-- 这儿还可以解构出个 $index ，相当于v-for中的index -->
+				<template slot-scope="{ row }">
+					<el-button
+						type="warning"
+						size="mini"
+						icon="el-icon-edit"
+						@click="updateTrademark(row)"
+						>修改</el-button
+					>
+					<el-button type="danger" size="mini" icon="el-icon-delete"
+						>删除</el-button
+					>
+				</template>
 			</el-table-column>
 		</el-table>
 
@@ -70,7 +75,10 @@
 
 		<!-- 对话框 -->
 		<!-- 这个 :visible.sync 来控制对话框显示与否 -->
-		<el-dialog title="添加品牌" :visible.sync="dialogFormVisible">
+		<el-dialog
+			:title="tmForm.id ? '修改品牌' : '添加品牌'"
+			:visible.sync="dialogFormVisible"
+		>
 			<!-- form表单 -->
 			<!-- model属性用于收集表单数据 -->
 			<el-form style="width: 80%" :model="tmForm">
@@ -156,8 +164,13 @@ export default {
 			this.tmForm = { tmName: "", logoUrl: "" };
 		},
 		// “品牌管理”中“修改”按钮的回调
-		updateTrademark() {
+		// row这个参数包含着用户选中的那个商品的信息，id、tmName啥的
+		updateTrademark(row) {
 			this.dialogFormVisible = true;
+			// 这儿得 = { ...row } ，即浅拷贝
+			/* 直接 = row 的话，你是直接修改服务器数据了，即直接修改原始数据了，会导致
+			你不点改的同时数据会直接变就，不点“确认”或“取消”按钮，数据都实时改变 */
+			this.tmForm = { ...row };
 		},
 		// 图片上传成功
 		// res是一个对象，存储着成功上传之后服务器返回的数据一些数据
@@ -185,8 +198,14 @@ export default {
 			);
 			if (result.code == 200) {
 				// 这是一个elementUI的弹出框
-				// 这里利用是否有tmForm.id来判断是添加操作还是更新操作
-				this.$message(this.tmForm.id ? "修改品牌成功" : "添加品牌成功");
+				this.$message({
+					// 样式
+					type: "success",
+					// 这里利用是否有tmForm.id来判断是添加操作还是更新操作
+					message: this.tmForm.id ? "修改品牌成功" : "添加品牌成功",
+				});
+				// 如果是添加操作，则跳转到第1页；如果是修改，则停留在当前页
+				this.handleCurrentChange(this.tmForm.id ? this.page : 1);
 				// 弄完后重新获取数据以供展示
 				this.getPageList();
 			}
