@@ -81,15 +81,12 @@
 		>
 			<!-- form表单 -->
 			<!-- model属性用于收集表单数据 -->
-			<el-form style="width: 80%" :model="tmForm">
-				<el-form-item label="品牌名称" label-width="100px">
+			<el-form style="width: 80%" :model="tmForm" :rules="rules" ref="ruleForm">
+				<el-form-item label="品牌名称" label-width="100px" prop="tmName">
 					<!-- 输入框 -->
 					<el-input autocomplete="off" v-model="tmForm.tmName"></el-input>
 				</el-form-item>
-			</el-form>
-			<!-- form表单 -->
-			<el-form style="width: 80%">
-				<el-form-item label="品牌LOGO" label-width="100px">
+				<el-form-item label="品牌LOGO" label-width="100px" prop="logoUrl">
 					<!-- 上传图片 -->
 					<!-- action属性的值为图片上传的地址 -->
 					<!-- on-success属性会在图片上传成功时执行一次 -->
@@ -123,6 +120,15 @@
 export default {
 	name: "Trademark",
 	data() {
+		// 自定义校验规则
+		// 第1个参数是校验规则，第2个参数是用户的数据，第3个参数是个用于放行的函数
+		var validateTmName = (rule, value, callback) => {
+			if (value.length < 2 || value.length > 10) {
+				callback(new Error("品牌名称需 2 到 10 位"));
+			} else {
+				callback();
+			}
+		};
 		return {
 			// 当前第几页
 			page: 1,
@@ -137,6 +143,16 @@ export default {
 			tmForm: {
 				tmName: "",
 				logoUrl: "",
+			},
+			// 表单验证规则
+			// trigger属性的blur表示失焦时触发验证，change表示内容发生变化就触发验证
+			rules: {
+				tmName: [
+					{ required: true, message: "请输入品牌名称", trigger: "blur" },
+					// 自定义校验规则
+					{ validator: validateTmName, trigger: "change" },
+				],
+				logoUrl: [{ required: true, message: "请选择品牌图片" }],
 			},
 		};
 	},
@@ -190,25 +206,35 @@ export default {
 			}
 			return isJPG && isLt2M;
 		},
-		async addOrUpdateTrademark() {
-			// 关闭这个对话框
-			this.dialogFormVisible = false;
-			let result = await this.$API.trademark.reqAddOrUpdateTrademark(
-				this.tmForm
-			);
-			if (result.code == 200) {
-				// 这是一个elementUI的弹出框
-				this.$message({
-					// 样式
-					type: "success",
-					// 这里利用是否有tmForm.id来判断是添加操作还是更新操作
-					message: this.tmForm.id ? "修改品牌成功" : "添加品牌成功",
-				});
-				// 如果是添加操作，则跳转到第1页；如果是修改，则停留在当前页
-				this.handleCurrentChange(this.tmForm.id ? this.page : 1);
-				// 弄完后重新获取数据以供展示
-				this.getPageList();
-			}
+		addOrUpdateTrademark() {
+			this.$refs.ruleForm.validate(async (success) => {
+				// 如果通过校验
+				if (success) {
+					// 关闭这个对话框
+					this.dialogFormVisible = false;
+					let result = await this.$API.trademark.reqAddOrUpdateTrademark(
+						this.tmForm
+					);
+					if (result.code == 200) {
+						// 这是一个elementUI的弹出框
+						this.$message({
+							// 样式
+							type: "success",
+							// 这里利用是否有tmForm.id来判断是添加操作还是更新操作
+							message: this.tmForm.id ? "修改品牌成功" : "添加品牌成功",
+						});
+						// 如果是添加操作，则跳转到第1页；如果是修改，则停留在当前页
+						this.handleCurrentChange(this.tmForm.id ? this.page : 1);
+						// 弄完后重新获取数据以供展示
+						this.getPageList();
+					}
+				}
+				// 校验失败
+				else {
+					console.log("error submit!!");
+					return false;
+				}
+			});
 		},
 	},
 	mounted() {
