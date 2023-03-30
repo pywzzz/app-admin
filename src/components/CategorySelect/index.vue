@@ -82,20 +82,39 @@ export default {
 			}
 		},
 		async category1Handler() {
+			//一级列表变的同时，得把旗下的二级、三级列表的数据清空
+			this.list2 = [];
+			this.list3 = [];
+			this.categoryIdForm.category2Id = "";
+			this.categoryIdForm.category3Id = "";
+			// 解构
 			const { category1Id } = this.categoryIdForm;
+			// 向父组件Attr传参
+			this.$emit("getCategoryId", { categoryId: category1Id, level: 1 });
 			let result = await this.$API.attr.reqCategory2List(category1Id);
 			if (result.code == 200) {
 				this.list2 = result.data;
 			}
 		},
 		async category2Handler() {
+			//二级列表变的同时，得把旗下的三级列表的数据清空
+			this.list3 = [];
+			this.categoryIdForm.category3Id = "";
+			// 解构
 			const { category2Id } = this.categoryIdForm;
+			// 向父组件Attr传参
+			this.$emit("getCategoryId", { categoryId: category2Id, level: 2 });
 			let result = await this.$API.attr.reqCategory3List(category2Id);
 			if (result.code == 200) {
 				this.list3 = result.data;
 			}
 		},
-		category3Handler() {},
+		category3Handler() {
+			// 解构
+			const { category3Id } = this.categoryIdForm;
+			// 向父组件Attr传参
+			this.$emit("getCategoryId", { categoryId: category3Id, level: 3 });
+		},
 	},
 	mounted() {
 		// 上去先获得一级列表的数据，让用户至少有东西去点
