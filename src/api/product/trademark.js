@@ -6,3 +6,23 @@ export const reqTrademarkList = (page, limit) =>
 		url: `/admin/product/baseTrademark/${page}/${limit}`,
 		method: "get",
 	});
+
+// 添加或更新品牌数据
+export const reqAddOrUpdateTrademark = (trademark) => {
+	// 更新品牌需要带3个参数：品牌id、品牌名称、品牌LOGO
+	// 如果有trademark.id的话就代表是更新操作（trademark.id为添加品牌后数据库生成的）
+	if (trademark.id) {
+		return request({
+			url: "/admin/product/baseTrademark/update",
+			method: "put",
+			data: trademark,
+		});
+		// 添加品牌需要带2个参数：品牌名称、品牌LOGO
+	} else {
+		return request({
+			url: "/admin/product/baseTrademark/save",
+			method: "post",
+			data: trademark,
+		});
+	}
+};
