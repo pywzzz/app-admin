@@ -204,6 +204,11 @@ export default {
 			/* 这个操作会，使得你的attrInfo中多出一个id字段，这个字段是因为row中定义了，而你又cloneDeep，所以
 			你的attrInfo也就多了个id字段（尽管你在data的attrInfo中并没有定义id字段） */
 			this.attrInfo = cloneDeep(row);
+			// 不加的话从，那些由三级列表筛出的属性，你点修改按钮后，因为唯有flag属性的缘故，所以无法让其变成input框供我们去修改
+			this.attrInfo.attrValueList.forEach((item) => {
+				//第1个参数为添加到谁身上，第2个参数为要添加的新的响应式属性，第3个参数为新的属性的属性值
+				this.$set(item, "flag", false);
+			});
 		},
 		toLook(row) {
 			// trim()去除字符串头尾空格
