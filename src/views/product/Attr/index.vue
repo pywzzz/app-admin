@@ -72,7 +72,6 @@
 					:disabled="!attrInfo.attrName"
 					>添加属性值</el-button
 				>
-				<el-button @click="isShowTable = true">取消</el-button>
 				<el-table
 					style="width: 100%; margin: 20px 0px"
 					border
