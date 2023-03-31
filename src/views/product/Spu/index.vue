@@ -8,7 +8,8 @@
 			></CategorySelect>
 		</el-card>
 		<el-card>
-			<div>
+			<!-- 数据列表部分 -->
+			<div v-show="scene == 0">
 				<!-- 按钮 -->
 				<el-button type="primary" icon="el-icon-plus">添加SPU</el-button>
 				<el-table style="width: 100%" border :data="records">
@@ -68,13 +69,25 @@
 				>
 				</el-pagination>
 			</div>
+			<!-- 添加或修改SPU部分 -->
+			<SpuForm v-show="scene == 1"></SpuForm>
+			<!-- 添加SKU部分 -->
+			<SkuForm v-show="scene == 2"></SkuForm>
 		</el-card>
 	</div>
 </template>
 
 <script>
+// 引入子组件
+import SpuForm from "./SpuForm";
+import SkuForm from "./SkuForm";
 export default {
 	name: "Spu",
+	// 注册子组件
+	components: {
+		SpuForm,
+		SkuForm,
+	},
 	data() {
 		return {
 			// 各级列表的id
@@ -87,6 +100,8 @@ export default {
 			limit: 5,
 			total: 0,
 			records: [],
+			// 0代表显示“数据列表"，1代表显示“添加或修改SPU”，2代表显示“添加SKU”
+			scene: 0,
 		};
 	},
 	methods: {
