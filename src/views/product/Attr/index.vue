@@ -33,12 +33,14 @@
 					</el-table-column>
 					<el-table-column prop="prop" label="操作" width="150">
 						<template slot-scope="{ row }">
+							<!-- 修改按钮 -->
 							<el-button
 								type="warning"
 								size="mini"
 								icon="el-icon-edit"
-								@click="isShowTable = false"
+								@click="updateAttr(row)"
 							></el-button>
+							<!-- 删除按钮 -->
 							<el-button
 								type="danger"
 								size="mini"
@@ -104,6 +106,8 @@
 </template>
 
 <script>
+// 按需引入lodash中的深拷贝函数cloneDeep
+import cloneDeep from "lodash/cloneDeep";
 export default {
 	name: "Attr",
 	data() {
@@ -120,7 +124,7 @@ export default {
 				//属性值
 				//其中存的是如 { attrId: 0, valueName: "" } ，attrId为属性值对应的属性名的id，valueName为属性值
 				attrValueList: [],
-				//这里面存的是三级分类的id
+				//这里面存的是这个属性名，所对应三级列表的id
 				categoryId: 0,
 				//区分是几级列表的id
 				categoryLevel: 3,
@@ -159,7 +163,14 @@ export default {
 		},
 		addAttrValue() {
 			// attrId为属性值对应的属性名的id，valueName为属性值
-			this.attrInfo.attrValueList.push({ attrId: undefined, valueName: "" });
+			this.attrInfo.attrValueList.push({
+				/* 如果是修改操作，因为是“修改”，所以属性名这东西是存在的（要不你改谁），有属性名那自然有属性名id，即
+				存在attrInfo.id，所以attrId值会为attrInfo.id（这个id字段的是由updateAttr中深拷贝得到的，你
+				其实在data下的attrInfo中并没有定义id字段）（别在id字段哪儿来的这地方迷）  */
+				// 如果是添加操作，则本身是没有属性名的，所以更没有属性名id，所以attrId值会为undefined
+				attrId: this.attrInfo.id,
+				valueName: "",
+			});
 		},
 		addAttr() {
 			//切换table显示与隐藏
@@ -172,6 +183,18 @@ export default {
 				categoryId: this.category3Id,
 				categoryLevel: 3,
 			};
+		},
+		updateAttr(row) {
+			//// 切换table显示与隐藏
+			this.isShowTable = false;
+			// 将选中的属性赋值给attrInfo
+			/* 直接 = row 的话，你是直接修改服务器数据了，即直接修改原始数据了，会导致你不点改的同时
+			数据会直接变就，不点“保存”或“取消”按钮，数据都实时改变 */
+			// 但这儿的attrInfo这个数据，的结构当中存在对象里套数组、数组里套对象，所以得用深拷贝
+			// 浅拷贝的那个是在18
+			/* 这个操作会，使得你的attrInfo中多出一个id字段，这个字段是因为row中定义了，而你又cloneDeep，所以
+			你的attrInfo也就多了个id字段（尽管你在data的attrInfo中并没有定义id字段） */
+			this.attrInfo = cloneDeep(row);
 		},
 	},
 };
