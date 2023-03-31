@@ -12,7 +12,7 @@
 					type="primary"
 					icon="el-icon-plus"
 					:disabled="!category3Id"
-					@click="isShowTable = false"
+					@click="addAttr"
 					>添加属性</el-button
 				>
 				<el-table style="width: 100%" border :data="attrList">
@@ -160,6 +160,18 @@ export default {
 		addAttrValue() {
 			// attrId为属性值对应的属性名的id，valueName为属性值
 			this.attrInfo.attrValueList.push({ attrId: undefined, valueName: "" });
+		},
+		addAttr() {
+			//切换table显示与隐藏
+			this.isShowTable = false;
+			//清除数据
+			this.attrInfo = {
+				attrName: "",
+				attrValueList: [],
+				// 手机第三级列表的id
+				categoryId: this.category3Id,
+				categoryLevel: 3,
+			};
 		},
 	},
 };
