@@ -2,7 +2,10 @@
 	<div>
 		<el-card style="margin: 20px 0px">
 			<!-- 用自定义事件@getCategoryId实现子组件CategorySelect向父组件Attr传参 -->
-			<CategorySelect @getCategoryId="getCategoryId"></CategorySelect>
+			<CategorySelect
+				@getCategoryId="getCategoryId"
+				:show="!isShowTable"
+			></CategorySelect>
 		</el-card>
 		<el-card>
 			<!-- 三级列表筛后的，属性，的展示部分 -->

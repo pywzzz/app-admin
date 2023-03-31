@@ -9,6 +9,7 @@
 					placeholder="请选择"
 					v-model="categoryIdForm.category1Id"
 					@change="category1Handler"
+					:disabled="show"
 				>
 					<!-- value属性是为下拉框的每一个选项赋予一个唯一标识符 -->
 					<el-option
@@ -26,6 +27,7 @@
 					placeholder="请选择"
 					v-model="categoryIdForm.category2Id"
 					@change="category2Handler"
+					:disabled="show"
 				>
 					<!-- value属性是为下拉框的每一个选项赋予一个唯一标识符 -->
 					<el-option
@@ -43,6 +45,7 @@
 					placeholder="请选择"
 					v-model="categoryIdForm.category3Id"
 					@change="category3Handler"
+					:disabled="show"
 				>
 					<!-- value属性是为下拉框的每一个选项赋予一个唯一标识符 -->
 					<el-option
@@ -60,6 +63,7 @@
 <script>
 export default {
 	name: "CategorySelect",
+	props: ["show"],
 	data() {
 		return {
 			list1: [],
