@@ -117,7 +117,12 @@
 						</template>
 					</el-table-column>
 				</el-table>
-				<el-button type="primary">保存</el-button>
+				<el-button
+					type="primary"
+					@click="addOrUpdateAttr"
+					:disabled="attrInfo.attrValueList.length < 1"
+					>保存</el-button
+				>
 				<el-button @click="isShowTable = true">取消</el-button>
 			</div>
 		</el-card>
@@ -258,6 +263,30 @@ export default {
 		deleteAttrValue(index) {
 			// 删除index对应的那个属性值
 			this.attrInfo.attrValueList.splice(index, 1);
+		},
+		async addOrUpdateAttr() {
+			this.attrInfo.attrValueList = this.attrInfo.attrValueList.filter(
+				(item) => {
+					// 把属性值不为空的那些过滤出来（空的就不传给服务器了）
+					if (item.valueName != "") {
+						// 删除掉提交服务器时不需要的flag属性
+						delete item.flag;
+						return true;
+					}
+				}
+			);
+			try {
+				// 发请求，来保存数据
+				await this.$API.attr.reqAddOrUpdateAttr(this.attrInfo);
+				// 保存成功后通过isShowTable跳转到具体数据的展示页面
+				this.isShowTable = true;
+				// 提示消失
+				this.$message({ type: "success", message: "保存成功" });
+				// 保存成功后再次获取数据
+				this.getAttrList();
+			} catch (error) {
+				this.$message("保存失败");
+			}
 		},
 	},
 };
