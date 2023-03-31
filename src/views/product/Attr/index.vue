@@ -84,7 +84,14 @@
 								v-model="row.valueName"
 								placeholder="请输入属性值名称"
 								size="mini"
+								v-if="row.flag"
+								@blur="toLook(row)"
+								@keyup.native.enter="toLook(row)"
 							></el-input>
+							<!-- 这儿用style让span变成一个block，即“块”，因为span太小了，你click不到 -->
+							<span v-else @click="row.flag = true" style="display: block">{{
+								row.valueName
+							}}</span>
 						</template>
 					</el-table-column>
 					<el-table-column prop="prop" label="操作" width="width">
@@ -170,6 +177,8 @@ export default {
 				// 如果是添加操作，则本身是没有属性名的，所以更没有属性名id，所以attrId值会为undefined
 				attrId: this.attrInfo.id,
 				valueName: "",
+				// 给每一个新添加的属性值，一个，flag属性，它用来控制是显示span标签（应在失焦状态显示）还是显示input标签（应在编辑状态）
+				flag: true,
 			});
 		},
 		addAttr() {
@@ -195,6 +204,26 @@ export default {
 			/* 这个操作会，使得你的attrInfo中多出一个id字段，这个字段是因为row中定义了，而你又cloneDeep，所以
 			你的attrInfo也就多了个id字段（尽管你在data的attrInfo中并没有定义id字段） */
 			this.attrInfo = cloneDeep(row);
+		},
+		toLook(row) {
+			// trim()去除字符串头尾空格
+			if (row.valueName.trim() == "") {
+				this.$message("属性值不能为空");
+				return;
+			}
+			// 新增的属性值不能与已有的属性值重复
+			let isRepeat = this.attrInfo.attrValueList.some((item) => {
+				// 用这个if使row在判断重复时避免和自己本身去比较
+				if (row !== item) {
+					return row.valueName == item.valueName;
+				}
+			});
+			if (isRepeat) {
+				this.$message("请不要输入重复的属性值");
+				return;
+			}
+			// 让input消失，显示span（因为input标签有个v-if，值为row.flag）
+			row.flag = false;
 		},
 	},
 };
