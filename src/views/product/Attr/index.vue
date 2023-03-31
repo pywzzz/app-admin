@@ -99,13 +99,21 @@
 						</template>
 					</el-table-column>
 					<el-table-column prop="prop" label="操作" width="width">
-						<template slot-scope="{ row }">
-							<!-- 删除按钮 -->
-							<el-button
-								type="danger"
-								icon="el-icon-delete"
-								size="mini"
-							></el-button>
+						<template slot-scope="{ row, $index }">
+							<!-- 气泡确认框 -->
+							<!-- @onConfirm是点击确定按钮后执的事件（新版本的写法是@confirm） -->
+							<el-popconfirm
+								:title="`确定删除“${row.valueName}”吗？`"
+								@onConfirm="deleteAttrValue($index)"
+							>
+								<!-- 删除按钮 -->
+								<el-button
+									type="danger"
+									icon="el-icon-delete"
+									size="mini"
+									slot="reference"
+								></el-button>
+							</el-popconfirm>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -246,6 +254,10 @@ export default {
 				// 因为index是一个变量，所以不能$refs.index，而应用这儿的这种中括号（表示枚举）$refs[index]的方式获得
 				this.$refs[index].focus();
 			});
+		},
+		deleteAttrValue(index) {
+			// 删除index对应的那个属性值
+			this.attrInfo.attrValueList.splice(index, 1);
 		},
 	},
 };
