@@ -51,19 +51,49 @@
 
 			<!-- 添加或修改属性的部分 -->
 			<div v-show="!isShowTable">
-				<el-form :inline="true" ref="form" label-width="80px">
+				<el-form :inline="true" ref="form" label-width="80px" :model="attrInfo">
 					<el-form-item label="属性名">
-						<el-input placeholder="请输入属性名"></el-input>
+						<el-input
+							placeholder="请输入属性名"
+							v-model="attrInfo.attrName"
+						></el-input>
 					</el-form-item>
 				</el-form>
-				<el-button type="primary" icon="el-icon-plus">添加属性值</el-button>
+				<!-- disabled使“属性名”这个框中有东西时才可以点“添加属性值”这按钮 -->
+				<el-button
+					type="primary"
+					icon="el-icon-plus"
+					@click="addAttrValue"
+					:disabled="!attrInfo.attrName"
+					>添加属性值</el-button
+				>
 				<el-button @click="isShowTable = true">取消</el-button>
-				<el-table style="width: 100%; margin: 20px 0px" border>
+				<el-table
+					style="width: 100%; margin: 20px 0px"
+					border
+					:data="attrInfo.attrValueList"
+				>
 					<el-table-column align="center" type="index" label="序号" width="80">
 					</el-table-column>
 					<el-table-column prop="prop" label="属性值名称" width="width">
+						<template slot-scope="{ row }">
+							<!-- 输属性值的地方 -->
+							<el-input
+								v-model="row.valueName"
+								placeholder="请输入属性值名称"
+								size="mini"
+							></el-input>
+						</template>
 					</el-table-column>
 					<el-table-column prop="prop" label="操作" width="width">
+						<template slot-scope="{ row }">
+							<!-- 删除按钮 -->
+							<el-button
+								type="danger"
+								icon="el-icon-delete"
+								size="mini"
+							></el-button>
+						</template>
 					</el-table-column>
 				</el-table>
 				<el-button type="primary">保存</el-button>
@@ -84,6 +114,17 @@ export default {
 			//存由三级列表筛后的，产品数据
 			attrList: [],
 			isShowTable: true,
+			attrInfo: {
+				//属性名
+				attrName: "",
+				//属性值
+				//其中存的是如 { attrId: 0, valueName: "" } ，attrId为属性值对应的属性名的id，valueName为属性值
+				attrValueList: [],
+				//这里面存的是三级分类的id
+				categoryId: 0,
+				//区分是几级列表的id
+				categoryLevel: 3,
+			},
 		};
 	},
 	methods: {
@@ -115,6 +156,10 @@ export default {
 			if (result.code == 200) {
 				this.attrList = result.data;
 			}
+		},
+		addAttrValue() {
+			// attrId为属性值对应的属性名的id，valueName为属性值
+			this.attrInfo.attrValueList.push({ attrId: undefined, valueName: "" });
 		},
 	},
 };
