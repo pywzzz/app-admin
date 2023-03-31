@@ -78,7 +78,7 @@
 					<el-table-column align="center" type="index" label="序号" width="80">
 					</el-table-column>
 					<el-table-column prop="prop" label="属性值名称" width="width">
-						<template slot-scope="{ row }">
+						<template slot-scope="{ row, $index }">
 							<!-- 输属性值的地方 -->
 							<el-input
 								v-model="row.valueName"
@@ -87,11 +87,15 @@
 								v-if="row.flag"
 								@blur="toLook(row)"
 								@keyup.native.enter="toLook(row)"
+								:ref="$index"
 							></el-input>
 							<!-- 这儿用style让span变成一个block，即“块”，因为span太小了，你click不到 -->
-							<span v-else @click="row.flag = true" style="display: block">{{
-								row.valueName
-							}}</span>
+							<span
+								v-else
+								@click="toEdit(row, $index)"
+								style="display: block"
+								>{{ row.valueName }}</span
+							>
 						</template>
 					</el-table-column>
 					<el-table-column prop="prop" label="操作" width="width">
@@ -180,6 +184,10 @@ export default {
 				// 给每一个新添加的属性值，一个，flag属性，它用来控制是显示span标签（应在失焦状态显示）还是显示input标签（应在编辑状态）
 				flag: true,
 			});
+			this.$nextTick(() => {
+				// 新添加的item总是在最后一个位置，减1是因为数组的索引值是从0开始的
+				this.$refs[this.attrInfo.attrValueList.length - 1].focus();
+			});
 		},
 		addAttr() {
 			//切换table显示与隐藏
@@ -229,6 +237,15 @@ export default {
 			}
 			// 让input消失，显示span（因为input标签有个v-if，值为row.flag）
 			row.flag = false;
+		},
+		toEdit(row, index) {
+			row.flag = true;
+			// 当节点渲染完毕后（从而保证有input这个节点），$nextTick执一次
+			this.$nextTick(() => {
+				// 利用$refs来获取相应的input表单元素实现聚焦
+				// 因为index是一个变量，所以不能$refs.index，而应用这儿的这种中括号（表示枚举）$refs[index]的方式获得
+				this.$refs[index].focus();
+			});
 		},
 	},
 };
