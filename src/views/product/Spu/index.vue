@@ -11,7 +11,13 @@
 			<!-- 数据列表部分 -->
 			<div v-show="scene == 0">
 				<!-- 按钮 -->
-				<el-button type="primary" icon="el-icon-plus">添加SPU</el-button>
+				<el-button
+					type="primary"
+					icon="el-icon-plus"
+					:disabled="!category3Id"
+					@click="addSpu"
+					>添加SPU</el-button
+				>
 				<el-table style="width: 100%" border :data="records">
 					<!-- 序号列 -->
 					<el-table-column type="index" label="序号" width="80" align="center">
@@ -38,6 +44,7 @@
 								size="mini"
 								icon="el-icon-edit"
 								title="修改spu"
+								@click="updateSpu(row)"
 							></el-button>
 							<!-- 按钮 -->
 							<el-button
@@ -134,6 +141,12 @@ export default {
 		handleSizeChange(limit) {
 			this.limit = limit;
 			this.getSpuList();
+		},
+		addSpu() {
+			this.scene = 1;
+		},
+		updateSpu(row) {
+			this.scene = 1;
 		},
 	},
 };
