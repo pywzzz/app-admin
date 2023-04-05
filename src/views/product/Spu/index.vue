@@ -77,7 +77,11 @@
 				</el-pagination>
 			</div>
 			<!-- 添加或修改SPU部分 -->
-			<SpuForm v-show="scene == 1"></SpuForm>
+			<SpuForm
+				v-show="scene == 1"
+				@changeScene="changeScene"
+				ref="spu"
+			></SpuForm>
 			<!-- 添加SKU部分 -->
 			<SkuForm v-show="scene == 2"></SkuForm>
 		</el-card>
@@ -147,6 +151,11 @@ export default {
 		},
 		updateSpu(row) {
 			this.scene = 1;
+			// 拿到子组件的initSpuData方法，用来获取数据
+			this.$refs.spu.initSpuData(row);
+		},
+		changeScene(scene) {
+			this.scene = scene;
 		},
 	},
 };
