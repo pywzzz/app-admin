@@ -37,11 +37,21 @@
 				</el-dialog>
 			</el-form-item>
 			<el-form-item label="销售属性">
-				<el-select placeholder="还有3条未选择" value="">
-					<el-option label="label" value="value"> </el-option>
+				<el-select
+					:placeholder="`还有${unSelectSaleAttr.length}未选择`"
+					v-model="attrId"
+				>
+					<el-option
+						:label="unselect.name"
+						:value="unselect.id"
+						v-for="unselect in unSelectSaleAttr"
+						:key="unselect.id"
+					></el-option>
 				</el-select>
-				<el-button type="primary" icon="el-icon-plus">添加销售属性</el-button>
-				<el-table style="width: 100%" border>
+				<el-button type="primary" icon="el-icon-plus" :disabled="!attrId"
+					>添加销售属性</el-button
+				>
+				<el-table style="width: 100%" border :data="spu.spuSaleAttrList">
 					<el-table-column
 						type="index"
 						label="序号"
@@ -49,11 +59,42 @@
 						align="center"
 					>
 					</el-table-column>
-					<el-table-column prop="prop" label="属性名" width="width">
+					<el-table-column prop="saleAttrName" label="属性名" width="width">
 					</el-table-column>
 					<el-table-column prop="prop" label="属性名称列表" width="width">
+						<template slot-scope="{ row }">
+							<!-- 展示已有的属性值 -->
+							<el-tag
+								:key="tag.id"
+								v-for="tag in row.spuSaleAttrValueList"
+								closable
+								:disable-transitions="false"
+								>{{ tag.saleAttrValueName }}</el-tag
+							>
+							<!-- 负责添加新的属性值 -->
+							<el-input
+								class="input-new-tag"
+								v-if="row.inputVisible"
+								v-model="row.inputValue"
+								ref="saveTagInput"
+								size="small"
+							>
+							</el-input>
+							<!-- 一个按钮 -->
+							<el-button v-else class="button-new-tag" size="small"
+								>添加</el-button
+							>
+						</template>
 					</el-table-column>
 					<el-table-column prop="prop" label="操作" width="width">
+						<!-- 删除的按钮 -->
+						<template slot-scope="{ row }">
+							<el-button
+								type="danger"
+								icon="el-icon-delete"
+								size="mini"
+							></el-button>
+						</template>
 					</el-table-column>
 				</el-table>
 			</el-form-item>
@@ -89,7 +130,24 @@ export default {
 			tradeMarkList: [],
 			spuImageList: [],
 			saleAttrList: [],
+			// 未选择的属性名的id（一共三个：尺寸、颜色、版本）
+			attrId: "",
 		};
+	},
+	computed: {
+		// 计算出还未选择的销售属性还有啥
+		unSelectSaleAttr() {
+			// saleAttrList一共三个：尺寸、颜色、版本
+			// filter是数组的过滤方法，filter中的return值为true则保留return的东西
+			return this.saleAttrList.filter((item) => {
+				// spuSaleAttrList是当前SPU已经有的saleAttrList
+				// every是个数组的方法，会返回一个布尔值，这个布尔值刚好供filter去用
+				return this.spu.spuSaleAttrList.every((item1) => {
+					// 如果为真则证明没有这个，则应加到unSelectSaleAttr
+					return item.name != item1.saleAttrName;
+				});
+			});
+		},
 	},
 	methods: {
 		handleRemove(file, fileList) {
@@ -132,4 +190,20 @@ export default {
 };
 </script>
 
-<style lang="" scoped></style>
+<style>
+.el-tag + .el-tag {
+	margin-left: 10px;
+}
+.button-new-tag {
+	margin-left: 10px;
+	height: 32px;
+	line-height: 30px;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+.input-new-tag {
+	width: 90px;
+	margin-left: 10px;
+	vertical-align: bottom;
+}
+</style>
