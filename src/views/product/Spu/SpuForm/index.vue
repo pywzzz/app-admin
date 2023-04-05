@@ -28,6 +28,7 @@
 					list-type="picture-card"
 					:on-preview="handlePictureCardPreview"
 					:on-remove="handleRemove"
+					:on-success="handleSuccess"
 					:file-list="spuImageList"
 				>
 					<i class="el-icon-plus"></i>
@@ -151,7 +152,8 @@ export default {
 	},
 	methods: {
 		handleRemove(file, fileList) {
-			console.log(file, fileList);
+			// 收集都删了哪一张
+			this.spuImageList = fileList;
 		},
 		handlePictureCardPreview(file) {
 			this.dialogImageUrl = file.url;
@@ -185,6 +187,10 @@ export default {
 			if (saleResult.code == 200) {
 				this.saleAttrList = saleResult.data;
 			}
+		},
+		handleSuccess(response, file, fileList) {
+			//收集图片的信息
+			this.spuImageList = fileList;
 		},
 	},
 };
