@@ -4,7 +4,7 @@
 			<!-- 三级列表 -->
 			<CategorySelect
 				@getCategoryId="getCategoryId"
-				:show="!show"
+				:show="scene!=0"
 			></CategorySelect>
 		</el-card>
 		<el-card>
@@ -105,8 +105,6 @@ export default {
 			category1Id: "",
 			category2Id: "",
 			category3Id: "",
-			// 控制三级列表的下拉框能不能点
-			show: true,
 			page: 1,
 			limit: 5,
 			total: 0,

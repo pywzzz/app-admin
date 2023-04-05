@@ -68,13 +68,14 @@
 					<el-table-column prop="saleAttrName" label="属性名" width="width">
 					</el-table-column>
 					<el-table-column prop="prop" label="属性名称列表" width="width">
-						<template slot-scope="{ row }">
+						<template slot-scope="{ row, $index }">
 							<!-- 展示已有的属性值 -->
 							<el-tag
 								:key="tag.id"
-								v-for="tag in row.spuSaleAttrValueList"
+								v-for="(tag, index) in row.spuSaleAttrValueList"
 								closable
 								:disable-transitions="false"
+								@close="row.spuSaleAttrValueList.splice(index, 1)"
 								>{{ tag.saleAttrValueName }}</el-tag
 							>
 							<!-- 负责添加新的属性值 -->
@@ -99,11 +100,12 @@
 					</el-table-column>
 					<el-table-column prop="prop" label="操作" width="width">
 						<!-- 删除的按钮 -->
-						<template slot-scope="{ row }">
+						<template slot-scope="{ row, $index }">
 							<el-button
 								type="danger"
 								icon="el-icon-delete"
 								size="mini"
+								@click="spu.spuSaleAttrList.splice($index, 1)"
 							></el-button>
 						</template>
 					</el-table-column>
