@@ -1,16 +1,26 @@
 <template>
 	<div>
-		<el-form ref="form" label-width="80px">
+		<el-form ref="form" label-width="80px" :model="spu">
 			<el-form-item label="SPU名称">
-				<el-input placeholder="SPU名称"></el-input>
+				<el-input placeholder="SPU名称" v-model="spu.spuName"></el-input>
 			</el-form-item>
 			<el-form-item label="品牌">
-				<el-select placeholder="请选择品牌">
-					<el-option label="label" value="value"></el-option>
+				<el-select placeholder="请选择品牌" v-model="spu.tmId">
+					<el-option
+						:label="tm.tmName"
+						:value="tm.id"
+						v-for="tm in tradeMarkList"
+						:key="tm.id"
+					></el-option>
 				</el-select>
 			</el-form-item>
 			<el-form-item label="SPU描述">
-				<el-input type="textarea" rows="4" placeholder="描述"></el-input>
+				<el-input
+					type="textarea"
+					rows="4"
+					placeholder="描述"
+					v-model="spu.description"
+				></el-input>
 			</el-form-item>
 			<el-form-item label="SPU图片">
 				<el-upload
@@ -18,6 +28,7 @@
 					list-type="picture-card"
 					:on-preview="handlePictureCardPreview"
 					:on-remove="handleRemove"
+					:file-list="spuImageList"
 				>
 					<i class="el-icon-plus"></i>
 				</el-upload>
@@ -61,7 +72,20 @@ export default {
 		return {
 			dialogImageUrl: "",
 			dialogVisible: false,
-			spu: {},
+			spu: {
+				// 三级分类的id
+				category3Id: 0,
+				// 描述
+				description: "",
+				// spu名称
+				spuName: "",
+				// 平台的id
+				tmId: "",
+				// 收集SPU图片的信息
+				spuImageList: [],
+				// 平台属性与属性值收集
+				spuSaleAttrList: [],
+			},
 			tradeMarkList: [],
 			spuImageList: [],
 			saleAttrList: [],
@@ -89,7 +113,14 @@ export default {
 			// 获取spu图片的数据
 			let spuImageResult = await this.$API.spu.reqSpuImageList(spu.id);
 			if (spuImageResult.code == 200) {
-				this.spuImageList = spuImageResult.data;
+				// 这里为了迎合elementUI的文档要求，所以需要把服务器返回的数据进行修改
+				let listArr = spuImageResult.data;
+				listArr.forEach((item) => {
+					item.name = item.imgName;
+					item.url = item.imgUrl;
+				});
+				// 数据整理好后再赋值给spuImageList
+				this.spuImageList = listArr;
 			}
 			// 获取平台全部的销售属性
 			let saleResult = await this.$API.spu.reqBaseSaleAttrList();
