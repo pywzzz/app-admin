@@ -84,10 +84,15 @@
 								v-model="row.inputValue"
 								ref="saveTagInput"
 								size="small"
+								@blur="handleInputConfirm(row)"
 							>
 							</el-input>
 							<!-- 一个按钮 -->
-							<el-button v-else class="button-new-tag" size="small"
+							<el-button
+								v-else
+								class="button-new-tag"
+								size="small"
+								@click="addSaleAttrValue(row)"
 								>添加</el-button
 							>
 						</template>
@@ -208,6 +213,36 @@ export default {
 			};
 			// 添加新的销售属性
 			this.spu.spuSaleAttrList.push(newSaleAttr);
+		},
+		// 点击添加按钮后触发这个
+		addSaleAttrValue(row) {
+			// 点击销售属性值当中添加按钮的时候，需要通过inputVisible来将“添加”这个button变为input
+			// 但这东西本身是没有的，所以得自己添加（而且你都点添加按钮的了，所以这个值直接设置为true）
+			this.$set(row, "inputVisible", true);
+			// 通过响应式数据inputValue字段收集新增的属性值内容（默认为空）
+			this.$set(row, "inputValue", "");
+		},
+		handleInputConfirm(row) {
+			// 解构
+			const { baseSaleAttrId, inputValue } = row;
+			// 新增的属性值不能为空
+			if (inputValue.trim() == "") {
+				this.$message("属性值不能为空");
+				return;
+			}
+			// 属性值不能重复
+			let result = row.spuSaleAttrValueList.every(
+				(item) => item.saleAttrValueName != inputValue
+			);
+			if (!result) {
+				this.$message("属性值不能重复");
+				return;
+			}
+			// 新增添加的属性值
+			let newSaleAttrValue = { baseSaleAttrId, saleAttrValueName: inputValue };
+			row.spuSaleAttrValueList.push(newSaleAttrValue);
+			// 修改inputVisible为false从而再次显示“添加”按钮供用户继续添加
+			row.inputVisible = false;
 		},
 	},
 };
