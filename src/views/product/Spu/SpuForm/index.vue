@@ -38,18 +38,23 @@
 				</el-dialog>
 			</el-form-item>
 			<el-form-item label="销售属性">
+				<!-- v-model可以收集的是下拉框中的value属性的数据 -->
 				<el-select
 					:placeholder="`还有${unSelectSaleAttr.length}未选择`"
-					v-model="attrId"
+					v-model="attrIdAndAttrName"
 				>
 					<el-option
 						:label="unselect.name"
-						:value="unselect.id"
+						:value="`${unselect.id}:${unselect.name}`"
 						v-for="unselect in unSelectSaleAttr"
 						:key="unselect.id"
 					></el-option>
 				</el-select>
-				<el-button type="primary" icon="el-icon-plus" :disabled="!attrId"
+				<el-button
+					type="primary"
+					icon="el-icon-plus"
+					:disabled="!attrIdAndAttrName"
+					@click="addSaleAttr"
 					>添加销售属性</el-button
 				>
 				<el-table style="width: 100%" border :data="spu.spuSaleAttrList">
@@ -132,7 +137,7 @@ export default {
 			spuImageList: [],
 			saleAttrList: [],
 			// 未选择的属性名的id（一共三个：尺寸、颜色、版本）
-			attrId: "",
+			attrIdAndAttrName: "",
 		};
 	},
 	computed: {
@@ -191,6 +196,18 @@ export default {
 		handleSuccess(response, file, fileList) {
 			//收集图片的信息
 			this.spuImageList = fileList;
+		},
+		addSaleAttr() {
+			// 结构出用户在选择下拉框后得到的数据
+			const [baseSaleAttrId, saleAttrName] = this.attrIdAndAttrName.split(":");
+			// spuSaleAttrList中添加新的销售属性
+			let newSaleAttr = {
+				baseSaleAttrId,
+				saleAttrName,
+				spuSaleAttrValueList: [],
+			};
+			// 添加新的销售属性
+			this.spu.spuSaleAttrList.push(newSaleAttr);
 		},
 	},
 };
