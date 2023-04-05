@@ -53,19 +53,13 @@
 								icon="el-icon-info"
 								title="查看当前spu全部sku列表"
 							></el-button>
-							<el-popconfirm
-								title="这是一段内容确定删除吗？"
-								@onConfirm="deleteSpu(row)"
-							>
-								<!-- 按钮 -->
-								<el-button
-									type="danger"
-									icon="el-icon-delete"
-									size="mini"
-									title="删除spu"
-									slot="reference"
-								></el-button>
-							</el-popconfirm>
+							<!-- 按钮 -->
+							<el-button
+								type="danger"
+								size="mini"
+								icon="el-icon-delete"
+								title="删除spu"
+							></el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -169,14 +163,6 @@ export default {
 			} else {
 				// 停留到第一页（getSpuList的参数的默认值你设置的是1）
 				this.getSpuList();
-			}
-		},
-		async deleteSpu(row) {
-			let result = await this.$API.spu.reqDeleteSpu(row.id);
-			if (result.code == 200) {
-				this.$message({ type: "success", message: "删除成功" });
-				// 代表SPU个数大于1，则删除后停留在当前页，如果SPU个数小于1，则删除后回到上一页
-				this.getSpuList(this.records.length > 1 ? this.page : this.page - 1);
 			}
 		},
 	},
