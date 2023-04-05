@@ -112,7 +112,7 @@
 				</el-table>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary">保存</el-button>
+				<el-button type="primary" @click="addOrUpdateSpu">保存</el-button>
 				<el-button @click="$emit('changeScene', 0)">取消</el-button>
 			</el-form-item>
 		</el-form>
@@ -245,6 +245,25 @@ export default {
 			row.spuSaleAttrValueList.push(newSaleAttrValue);
 			// 修改inputVisible为false从而再次显示“添加”按钮供用户继续添加
 			row.inputVisible = false;
+		},
+		// 点击保存按钮
+		async addOrUpdateSpu() {
+			//整理照片墙的数据，它需要携带imgName与imgUrl这两个参数
+			this.spu.spuImageList = this.spuImageList.map((item) => {
+				return {
+					// 添加时的新图和修改时的旧图均有name字段
+					imgName: item.name,
+					// 如果有response字段（这个字段是图片存到服务器后服务器返回的），代表这张图是新存的
+					imgUrl: item.response ? item.response.data : item.url,
+				};
+			});
+			// 发请求
+			let result = await this.$API.spu.reqAddOrUpdateSpu(this.spu);
+			if (result.code == 200) {
+				this.$message({ type: "success", message: "保存成功" });
+				// 通知父组件回到场景0（这个changeScene是在之前弄取消按钮那儿写的）
+				this.$emit("changeScene", 0);
+			}
 		},
 	},
 };

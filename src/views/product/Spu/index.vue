@@ -4,7 +4,7 @@
 			<!-- 三级列表 -->
 			<CategorySelect
 				@getCategoryId="getCategoryId"
-				:show="scene!=0"
+				:show="scene != 0"
 			></CategorySelect>
 		</el-card>
 		<el-card>
@@ -154,6 +154,10 @@ export default {
 		},
 		changeScene(scene) {
 			this.scene = scene;
+			// 这一步重新获取数据是针对保存按钮弄的，取消按钮其实不用这一步
+			this.getSpuList();
+			// 停留在当前页
+			handleCurrentChange(this.page);
 		},
 	},
 };
