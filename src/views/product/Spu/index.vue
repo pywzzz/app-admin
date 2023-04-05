@@ -70,7 +70,7 @@
 					:page-sizes="[5, 10, 20]"
 					:page-size="limit"
 					:total="total"
-					@current-change="handleCurrentChange"
+					@current-change="getSpuList"
 					@size-change="handleSizeChange"
 					layout="prev, pager, next, jumper, ->, sizes, total"
 				>
@@ -128,7 +128,9 @@ export default {
 				this.getSpuList();
 			}
 		},
-		async getSpuList() {
+		// 这儿的形参名必须写pages，因为这儿用到了解构
+		async getSpuList(pages = 1) {
+			this.page = pages;
 			const { page, limit, category3Id } = this;
 			let result = await this.$API.spu.reqSpuList(page, limit, category3Id);
 			if (result.code == 200) {
@@ -136,28 +138,32 @@ export default {
 				this.records = result.data.records;
 			}
 		},
-		handleCurrentChange(page) {
-			this.page = page;
-			this.getSpuList();
-		},
 		handleSizeChange(limit) {
 			this.limit = limit;
 			this.getSpuList();
 		},
 		addSpu() {
 			this.scene = 1;
+			// 通知子组件SpuForm发请求（添加操作只用发2个参数，修改操作是4个）
+			// 顺便把category3Id传过去。因为添加时本身是没有category3Id的
+			// 修改时的category3Id是从服务器取得的
+			this.$refs.spu.addSpuData(this.category3Id);
 		},
 		updateSpu(row) {
 			this.scene = 1;
 			// 拿到子组件的initSpuData方法，用来获取数据
 			this.$refs.spu.initSpuData(row);
 		},
-		changeScene(scene) {
+		changeScene({ scene, flag }) {
 			this.scene = scene;
 			// 这一步重新获取数据是针对保存按钮弄的，取消按钮其实不用这一步
-			this.getSpuList();
-			// 停留在当前页
-			handleCurrentChange(this.page);
+			if (flag == "修改") {
+				// 停留在当前页
+				this.getSpuList(this.page);
+			} else {
+				// 停留到第一页（getSpuList的参数的默认值你设置的是1）
+				this.getSpuList();
+			}
 		},
 	},
 };

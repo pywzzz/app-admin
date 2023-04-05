@@ -113,7 +113,7 @@
 			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" @click="addOrUpdateSpu">保存</el-button>
-				<el-button @click="$emit('changeScene', 0)">取消</el-button>
+				<el-button @click="cancel">取消</el-button>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -262,8 +262,42 @@ export default {
 			if (result.code == 200) {
 				this.$message({ type: "success", message: "保存成功" });
 				// 通知父组件回到场景0（这个changeScene是在之前弄取消按钮那儿写的）
-				this.$emit("changeScene", 0);
+				this.$emit("changeScene", {
+					scene: 0,
+					flag: this.spu.id ? "修改" : "添加",
+				});
 			}
+			// 取消后清理数据
+			// Object.assign之前用过，是ES6中用于合并对象的方法
+			// 组件实例this._data,可以操作data当中响应式数据（即现有的数据）
+			// this.$options可以获取配置对象，而配置对象的data函数执行后返回一个对应的响应式数据但值均为空
+			// 以此达到了清除数据的效果
+			Object.assign(this._data, this.$options.data());
+		},
+		// 点击添加SPU按钮的时候，发请求的函数
+		async addSpuData(category3Id) {
+			// 添加SPU的时候收集三级分类的id（这个是父组件传过来的）
+			this.spu.category3Id = category3Id;
+			// 获取品牌的信息
+			let tradeMarkResult = await this.$API.spu.reqTradeMarkList();
+			if (tradeMarkResult.code == 200) {
+				this.tradeMarkList = tradeMarkResult.data;
+			}
+			// 获取平台全部的销售属性
+			let saleResult = await this.$API.spu.reqBaseSaleAttrList();
+			if (saleResult.code == 200) {
+				this.saleAttrList = saleResult.data;
+			}
+		},
+		cancel() {
+			// 取消按钮的回调，通知父亲切换场景为0
+			this.$emit("changeScene", { scene: 0, flag: "" });
+			// 取消后清理数据
+			// Object.assign之前用过，是ES6中用于合并对象的方法
+			// 组件实例this._data,可以操作data当中响应式数据（即现有的数据）
+			// this.$options可以获取配置对象，而配置对象的data函数执行后返回一个对应的响应式数据但值均为空
+			// 以此达到了清除数据的效果
+			Object.assign(this._data, this.$options.data());
 		},
 	},
 };
