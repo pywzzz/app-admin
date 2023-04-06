@@ -98,8 +98,9 @@
 		<el-dialog
 			:title="`${spu.spuName}的sku列表`"
 			:visible.sync="dialogTableVisible"
+			:before-close="close"
 		>
-			<el-table :data="skuList" style="width: 100%" border>
+			<el-table :data="skuList" style="width: 100%" border v-loading="loading">
 				<el-table-column prop="skuName" label="名称" width="width">
 				</el-table-column>
 				<el-table-column prop="price" label="价格" width="width">
@@ -148,6 +149,7 @@ export default {
 			spu: {},
 			// 存储一个SPU中含的那些SKU
 			skuList: [],
+			loading: true,
 		};
 	},
 	methods: {
@@ -228,7 +230,17 @@ export default {
 			let result = await this.$API.spu.reqSkuList(spu.id);
 			if (result.code == 200) {
 				this.skuList = result.data;
+				this.loading = false;
 			}
+		},
+		// 关闭对话框时执这个
+		close(done) {
+			// 让loading属性再次变为真
+			this.loading = true;
+			// 清除sku列表的数据
+			this.skuList = [];
+			// 关闭对话框
+			done();
 		},
 	},
 };
