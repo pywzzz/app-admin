@@ -154,6 +154,9 @@
 				<!-- 第2个card -->
 				<el-card>
 					<Detail title="访问量" count="435345">
+						<template slot="charts">
+							<LineChart></LineChart>
+						</template>
 						<template slot="footer">
 							<span>日访问量 1234</span>
 						</template>
@@ -322,10 +325,12 @@
 
 <script>
 import Detail from "./Detail";
+import LineChart from "./LineChart";
 export default {
 	name: "",
 	components: {
 		Detail,
+		LineChart,
 	},
 };
 </script>
