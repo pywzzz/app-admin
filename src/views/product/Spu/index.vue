@@ -53,7 +53,6 @@
 								size="mini"
 								icon="el-icon-info"
 								title="查看当前spu全部sku列表"
-								@click="getAllSkuInSpu(row)"
 							></el-button>
 							<el-popconfirm title="确定删除吗？" @onConfirm="deleteSpu(row)">
 								<!-- 按钮 -->
@@ -94,30 +93,6 @@
 				@changeScenes="changeScenes"
 			></SkuForm>
 		</el-card>
-		<!-- 展示一个SPU中的所含有的所有SKU -->
-		<el-dialog
-			:title="`${spu.spuName}的sku列表`"
-			:visible.sync="dialogTableVisible"
-			:before-close="close"
-		>
-			<el-table :data="skuList" style="width: 100%" border>
-				<el-table-column prop="skuName" label="名称" width="width">
-				</el-table-column>
-				<el-table-column prop="price" label="价格" width="width">
-				</el-table-column>
-				<el-table-column prop="weight" label="重量" width="width">
-				</el-table-column>
-				<el-table-column label="默认图片" width="width">
-					<template slot-scope="{ row }">
-						<img
-							:src="row.skuDefaultImg"
-							alt=""
-							style="width: 100px; height: 100px"
-						/>
-					</template>
-				</el-table-column>
-			</el-table>
-		</el-dialog>
 	</div>
 </template>
 
@@ -144,11 +119,6 @@ export default {
 			records: [],
 			// 0代表显示“数据列表"，1代表显示“添加或修改SPU”，2代表显示“添加SKU”
 			scene: 0,
-			// 控制对话框的显示与隐藏
-			dialogTableVisible: false,
-			spu: {},
-			// 存储一个SPU中含的那些SKU
-			skuList: [],
 		};
 	},
 	methods: {
@@ -218,18 +188,6 @@ export default {
 		// 这个是SkuForm的取消按钮用的
 		changeScenes(scene) {
 			this.scene = scene;
-		},
-		// 查看一个SPU中含有的所有SKU
-		async getAllSkuInSpu(spu) {
-			// 点击后显示对话框
-			this.dialogTableVisible = true;
-			//保存spu信息
-			this.spu = spu;
-			//获取sku列表的数据进行展示
-			let result = await this.$API.spu.reqSkuList(spu.id);
-			if (result.code == 200) {
-				this.skuList = result.data;
-			}
 		},
 	},
 };
