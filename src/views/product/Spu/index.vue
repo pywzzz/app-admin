@@ -37,6 +37,7 @@
 								size="mini"
 								icon="el-icon-plus"
 								title="添加sku"
+								@click="addSku(row)"
 							></el-button>
 							<!-- 按钮 -->
 							<el-button
@@ -175,6 +176,9 @@ export default {
 				// 代表SPU个数大于1，则删除后停留在当前页，如果SPU个数小于1，则删除后回到上一页
 				this.getSpuList(this.records.length > 1 ? this.page : this.page - 1);
 			}
+		},
+		addSku(row) {
+			this.scene = 2;
 		},
 	},
 };
