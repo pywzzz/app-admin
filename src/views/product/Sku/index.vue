@@ -48,7 +48,12 @@
 						v-else
 					></el-button>
 					<el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-					<el-button type="info" icon="el-icon-info" size="mini"></el-button>
+					<el-button
+						type="info"
+						icon="el-icon-info"
+						size="mini"
+						@click="getSkuInfo(row)"
+					></el-button>
 					<el-button
 						type="danger"
 						icon="el-icon-delete"
@@ -69,6 +74,48 @@
 			@size-change="handleSizeChange"
 		>
 		</el-pagination>
+		<!-- sku详情 -->
+		<el-drawer :visible.sync="show" :show-close="false" size="50%">
+			<el-row>
+				<el-col :span="5">名称</el-col>
+				<el-col :span="16">{{ skuInfo.skuName }}</el-col>
+			</el-row>
+			<el-row>
+				<el-col :span="5">描述</el-col>
+				<el-col :span="16">{{ skuInfo.skuDesc }}</el-col>
+			</el-row>
+			<el-row>
+				<el-col :span="5">价格</el-col>
+				<el-col :span="16">{{ skuInfo.price }}元</el-col>
+			</el-row>
+			<el-row>
+				<el-col :span="5">平台属性</el-col>
+				<el-col :span="16">
+					<template>
+						<el-tag
+							type="success"
+							v-for="attr in skuInfo.skuAttrValueList"
+							:key="attr.id"
+							style="margin-right: 10px"
+							>{{ attr.attrId }}-{{ attr.valueId }}</el-tag
+						>
+					</template>
+				</el-col>
+			</el-row>
+			<el-row>
+				<el-col :span="5">商品图片</el-col>
+				<el-col :span="16">
+					<el-carousel height="150px">
+						<el-carousel-item
+							v-for="item in skuInfo.skuImageList"
+							:key="item.id"
+						>
+							<img :src="item.imgUrl" />
+						</el-carousel-item>
+					</el-carousel>
+				</el-col>
+			</el-row>
+		</el-drawer>
 	</div>
 </template>
 
@@ -85,6 +132,10 @@ export default {
 			total: 0,
 			// 存储SKU列表中的数据
 			records: [],
+			// 存储sku的详情
+			skuInfo: {},
+			// 控制sku详情信息这部分的显示与否
+			show: false,
 		};
 	},
 	methods: {
@@ -118,6 +169,16 @@ export default {
 				this.$message({ type: "success", message: "下架成功" });
 			}
 		},
+		// 获取某个sku的详情
+		async getSkuInfo(sku) {
+			// 点击后展示sku详情
+			this.show = true;
+			// 获取SKU数据
+			let result = await this.$API.sku.reqSkuById(sku.id);
+			if (result.code == 200) {
+				this.skuInfo = result.data;
+			}
+		},
 	},
 	mounted() {
 		// 获取sku列表的方法
@@ -126,4 +187,38 @@ export default {
 };
 </script>
 
-<style lang="" scoped></style>
+<style>
+.el-carousel__item h3 {
+	color: #475669;
+	font-size: 14px;
+	opacity: 0.75;
+	line-height: 150px;
+	margin: 0;
+}
+
+.el-carousel__item:nth-child(2n) {
+	background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+	background-color: #d3dce6;
+}
+
+.el-carousel__button {
+	width: 10px;
+	height: 10px;
+	background: red;
+	border-radius: 50%;
+}
+</style>
+
+<style scoped>
+.el-row .el-col-5 {
+	font-size: 18px;
+	text-align: right;
+}
+
+.el-col {
+	margin: 10px 10px;
+}
+</style>

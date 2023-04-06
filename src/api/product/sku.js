@@ -11,3 +11,7 @@ export const reqSale = (skuId) =>
 //下架sku
 export const reqCancel = (skuId) =>
 	request({ url: `/admin/product/cancelSale/${skuId}`, method: "get" });
+
+//获取某个sku的详情的接口
+export const reqSkuById = (skuId) =>
+	request({ url: `/admin/product/getSkuById/${skuId}`, method: "get" });
