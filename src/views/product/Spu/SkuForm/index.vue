@@ -143,7 +143,7 @@ export default {
 			this.skuInfo.tmId = spu.tmId;
 			this.spu = spu;
 			// 获取图片的数据
-			let result0 = await this.$API.sku.reqSpuImageLIst(spu.id);
+			let result0 = await this.$API.spu.reqSpuImageLIst(spu.id);
 			if (result0.code == 200) {
 				// 收集数据的同时为每个图片数据加个叫isDefault的属性，用来今后确定这是否是默认图片
 				let list = result0.data;
@@ -153,12 +153,12 @@ export default {
 				this.spuImageList = list;
 			}
 			// 获取销售属性的数据
-			let result1 = await this.$API.sku.reqSpuSaleAttrList(spu.id);
+			let result1 = await this.$API.spu.reqSpuSaleAttrList(spu.id);
 			if (result1.code == 200) {
 				this.spuSaleAttrList = result1.data;
 			}
 			// 获取平台属性的数据
-			let result2 = await this.$API.sku.reqAttrInfoList(
+			let result2 = await this.$API.spu.reqAttrInfoList(
 				category1Id,
 				category2Id,
 				spu.category3Id

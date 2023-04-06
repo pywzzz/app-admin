@@ -49,3 +49,18 @@ export const reqAddOrUpdateSpu = (spuInfo) => {
 //删除SPU
 export const reqDeleteSpu = (spuId) =>
 	request({ url: `/admin/product/deleteSpu/${spuId}`, method: "delete" });
+
+//获取SPU这儿添加SKU时的图片的数据
+export const reqSpuImageLIst = (spuId) =>
+	request({ url: `/admin/product/spuImageList/${spuId}`, method: "get" });
+
+//获取SPU这儿添加SKU时的销售属性的数据
+export const reqSpuSaleAttrList = (spuId) =>
+	request({ url: `/admin/product/spuSaleAttrList/${spuId}`, method: "get" });
+
+//获取SPU这儿添加SKU时的平台属性的数据
+export const reqAttrInfoList = (category1Id, category2Id, category3Id) =>
+	request({
+		url: `/admin/product/attrInfoList/${category1Id}/${category2Id}/${category3Id}`,
+		method: "get",
+	});
