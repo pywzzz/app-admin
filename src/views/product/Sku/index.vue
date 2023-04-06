@@ -31,15 +31,21 @@
 			<el-table-column prop="price" label="价格" width="80"></el-table-column>
 			<el-table-column label="操作" width="width">
 				<template slot-scope="{ row }">
+					<!-- isSale是服务器返回的数据中的一个属性，1表示已上架，0表示已下架 -->
 					<el-button
 						type="success"
 						icon="el-icon-sort-down"
 						size="mini"
+						v-if="row.isSale == 0"
+						@click="shelveSku(row)"
 					></el-button>
+					<!-- isSale是服务器返回的数据中的一个属性，1表示已上架，0表示已下架 -->
 					<el-button
 						type="success"
 						icon="el-icon-sort-up"
 						size="mini"
+						@click="disableSku(row)"
+						v-else
 					></el-button>
 					<el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
 					<el-button type="info" icon="el-icon-info" size="mini"></el-button>
@@ -94,6 +100,22 @@ export default {
 			if (result.code == 200) {
 				this.total = result.data.total;
 				this.records = result.data.records;
+			}
+		},
+		// 上架sku
+		async shelveSku(row) {
+			let result = await this.$API.sku.reqSale(row.id);
+			if (result.code == 200) {
+				row.isSale = 1;
+				this.$message({ type: "success", message: "上架成功" });
+			}
+		},
+		// 下架sku
+		async disableSku(row) {
+			let result = await this.$API.sku.reqCancel(row.id);
+			if (result.code == 200) {
+				row.isSale = 0;
+				this.$message({ type: "success", message: "下架成功" });
 			}
 		},
 	},
