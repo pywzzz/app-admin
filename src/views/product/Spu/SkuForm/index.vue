@@ -90,8 +90,8 @@
 				</el-table>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary">保存</el-button>
-				<el-button>取消</el-button>
+				<el-button type="primary" @click="save">保存</el-button>
+				<el-button @click="cancel">取消</el-button>
 			</el-form-item>
 		</el-form>
 	</div>
@@ -180,6 +180,48 @@ export default {
 			row.isDefault = 1;
 			// 收集默认图片的图片地址供上传服务器用
 			this.skuInfo.skuDefaultImg = row.imgUrl;
+		},
+		cancel() {
+			// 让父组件把场景切换为0
+			this.$emit("changeScenes", 0);
+			// 清除数据
+			Object.assign(this._data, this.$options.data());
+		},
+		async save() {
+			// 解构
+			const { attrInfoList, skuInfo, spuSaleAttrList, imageList } = this;
+			// 在发送请求前要先整理参数，从而迎合服务器的所需的数据的格式
+			skuInfo.skuAttrValueList = attrInfoList.reduce((prev, item) => {
+				// 用户在下拉框中选完后，才会有一个叫attrIdAndValueId的字段
+				if (item.attrIdAndValueId) {
+					const [attrId, valueId] = item.attrIdAndValueId.split(":");
+					prev.push({ attrId, valueId });
+				}
+				return prev;
+			}, []);
+			skuInfo.skuSaleAttrValueList = spuSaleAttrList.reduce((prev, item) => {
+				if (item.attrIdAndValueId) {
+					const [saleAttrId, saleAttrValueId] =
+						item.attrIdAndValueId.split(":");
+					prev.push({ saleAttrId, saleAttrValueId });
+				}
+				return prev;
+			}, []);
+			skuInfo.skuImageList = imageList.map((item) => {
+				return {
+					imgName: item.imgName,
+					imgUrl: item.imgUrl,
+					isDefault: item.isDefault,
+					spuImgId: item.id,
+				};
+			});
+			// 发请求
+			let result = await this.$API.spu.reqAddSku(skuInfo);
+			if (result.code == 200) {
+				this.$message({ type: "success", message: "添加SKU成功" });
+				// 添加成功后切一下scene
+				this.$emit("changeScenes", 0);
+			}
 		},
 	},
 };

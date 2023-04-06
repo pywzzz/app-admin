@@ -87,7 +87,11 @@
 				ref="spu"
 			></SpuForm>
 			<!-- 添加SKU部分 -->
-			<SkuForm v-show="scene == 2" ref="sku"></SkuForm>
+			<SkuForm
+				v-show="scene == 2"
+				ref="sku"
+				@changeScenes="changeScenes"
+			></SkuForm>
 		</el-card>
 	</div>
 </template>
@@ -180,6 +184,10 @@ export default {
 		addSku(row) {
 			this.scene = 2;
 			this.$refs.sku.getData(this.category1Id, this.category2Id, row);
+		},
+		// 这个是SkuForm的取消按钮用的
+		changeScenes(scene) {
+			this.scene = scene;
 		},
 	},
 };
