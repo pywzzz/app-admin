@@ -87,7 +87,7 @@
 				ref="spu"
 			></SpuForm>
 			<!-- 添加SKU部分 -->
-			<SkuForm v-show="scene == 2"></SkuForm>
+			<SkuForm v-show="scene == 2" ref="sku"></SkuForm>
 		</el-card>
 	</div>
 </template>
@@ -179,6 +179,7 @@ export default {
 		},
 		addSku(row) {
 			this.scene = 2;
+			this.$refs.sku.getData(this.category1Id, this.category2Id, row);
 		},
 	},
 };
