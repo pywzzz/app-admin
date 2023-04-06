@@ -55,16 +55,38 @@
 				</el-form>
 			</el-form-item>
 			<el-form-item label="图片列表">
-				<el-table style="width: 100%" border>
+				<el-table
+					style="width: 100%"
+					border
+					:data="spuImageList"
+					@selection-change="handleSelectionChange"
+				>
 					<el-table-column
 						type="selection"
 						prop=""
-						label=""
 						width="60"
 					></el-table-column>
-					<el-table-column prop="" label="图片" width="width"></el-table-column>
-					<el-table-column prop="" label="名称" width="width"></el-table-column>
-					<el-table-column prop="" label="操作" width="width"></el-table-column>
+					<el-table-column prop="" label="图片" width="width">
+						<template slot-scope="{ row }">
+							<img :src="row.imgUrl" style="width: 100px; height: 100px" />
+						</template>
+					</el-table-column>
+					<el-table-column
+						prop="imgName"
+						label="名称"
+						width="width"
+					></el-table-column>
+					<el-table-column prop="" label="操作" width="width">
+						<template slot-scope="{ row }">
+							<el-button
+								type="primary"
+								v-if="row.isDefault == 0"
+								@click="changeDefault(row)"
+								>设置默认</el-button
+							>
+							<el-button v-else>默认</el-button>
+						</template>
+					</el-table-column>
 				</el-table>
 			</el-form-item>
 			<el-form-item>
@@ -109,6 +131,8 @@ export default {
 			},
 			// 这个也是父组件给的数据（总共4个，上面有3个）
 			spu: {},
+			// 收集图片勾中的那些图片的数据
+			imageList: [],
 		};
 	},
 	methods: {
@@ -121,7 +145,12 @@ export default {
 			// 获取图片的数据
 			let result0 = await this.$API.sku.reqSpuImageLIst(spu.id);
 			if (result0.code == 200) {
-				this.spuImageList = result0.data;
+				// 收集数据的同时为每个图片数据加个叫isDefault的属性，用来今后确定这是否是默认图片
+				let list = result0.data;
+				list.forEach((item) => {
+					item.isDefault = 0;
+				});
+				this.spuImageList = list;
 			}
 			// 获取销售属性的数据
 			let result1 = await this.$API.sku.reqSpuSaleAttrList(spu.id);
@@ -137,6 +166,20 @@ export default {
 			if (result2.code == 200) {
 				this.attrInfoList = result2.data;
 			}
+		},
+		// 这是那个复选框的回调，这个params是勾中的那一堆东西的数据
+		handleSelectionChange(params) {
+			this.imageList = params;
+		},
+		changeDefault(row) {
+			// 将图片列表的数据的isDefault先都变为0
+			this.spuImageList.forEach((item) => {
+				item.isDefault = 0;
+			});
+			// 点击的那个图片的isDefault变为1
+			row.isDefault = 1;
+			// 收集默认图片的图片地址供上传服务器用
+			this.skuInfo.skuDefaultImg = row.imgUrl;
 		},
 	},
 };
