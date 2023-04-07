@@ -30,6 +30,7 @@ import Layout from "@/layout";
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+// 这个是常量路由，任何权限的用户都能访问这些页面
 export const constantRoutes = [
 	{
 		path: "/login",
@@ -57,7 +58,10 @@ export const constantRoutes = [
 			},
 		],
 	},
+];
 
+// 这个是异步路由，访问这其中的页面需要相应的权限
+export const asyncRoutes = [
 	{
 		path: "/product",
 		component: Layout,
@@ -90,7 +94,7 @@ export const constantRoutes = [
 			},
 		],
 	},
-	
+
 	{
 		name: "Acl",
 		path: "/acl",
@@ -137,10 +141,10 @@ export const constantRoutes = [
 			},
 		],
 	},
-
-	// 404 page must be placed at the end !!!
-	{ path: "*", redirect: "/404", hidden: true },
 ];
+
+// 这个是任意路由，用于在路径出现错误时，重定向到404页面
+export const anyRoutes = { path: "*", redirect: "/404", hidden: true };
 
 const createRouter = () =>
 	new Router({
