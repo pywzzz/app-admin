@@ -180,6 +180,9 @@
 				<!-- 第4个card -->
 				<el-card>
 					<Detail title="运营活动效果" count="78%">
+						<template slot="charts">
+							<ProgressChart></ProgressChart>
+						</template>
 						<template slot="footer">
 							<span
 								>周同比&nbsp;&nbsp;56.67%
@@ -330,12 +333,14 @@
 import Detail from "./Detail";
 import LineChart from "./LineChart";
 import BarChart from "./BarChart";
+import ProgressChart from "./ProgressChart";
 export default {
 	name: "",
 	components: {
 		Detail,
 		LineChart,
 		BarChart,
+		ProgressChart,
 	},
 };
 </script>
