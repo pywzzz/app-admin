@@ -46,3 +46,8 @@
 .el-range-separator {
 	box-sizing: content-box;
 }
+
+// 隐藏了一条线
+.el-card__header{
+	border-bottom: none;
+}
