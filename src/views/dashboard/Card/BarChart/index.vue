@@ -10,9 +10,9 @@ export default {
 	name: "",
 	mounted() {
 		// 初始化echarts实例
-		let lineCharts = echarts.init(this.$refs.charts);
+		let barCharts = echarts.init(this.$refs.charts);
 		// 配置数据
-		lineCharts.setOption({
+		barCharts.setOption({
 			xAxis: {
 				// 隐藏x轴
 				show: false,

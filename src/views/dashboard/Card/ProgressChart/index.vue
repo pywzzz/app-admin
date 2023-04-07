@@ -10,9 +10,9 @@ export default {
 	name: "",
 	mounted() {
 		// 初始化echarts实例
-		let lineCharts = echarts.init(this.$refs.charts);
+		let progressCharts = echarts.init(this.$refs.charts);
 		// 配置数据
-		lineCharts.setOption({
+		progressCharts.setOption({
 			xAxis: {
 				// 隐藏x轴
 				show: false,
