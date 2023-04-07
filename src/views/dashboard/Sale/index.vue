@@ -8,18 +8,20 @@
 			</el-tabs>
 			<!-- 上方右侧 -->
 			<div class="right">
-				<span>今日</span>
-				<span>本周</span>
-				<span>本月</span>
-				<span>本年</span>
+				<span @click="setDay">今日</span>
+				<span @click="setWeek">本周</span>
+				<span @click="setMonth">本月</span>
+				<span @click="setYear">本年</span>
 				<!-- 日历 -->
 				<el-date-picker
+					v-model="calendarDate"
 					class="calendar"
 					type="daterange"
 					range-separator="-"
 					start-placeholder="开始日期"
 					end-placeholder="结束日期"
 					size="mini"
+					value-format="yyyy-MM-dd"
 				>
 				</el-date-picker>
 			</div>
@@ -32,7 +34,7 @@
 					<div class="charts" ref="charts"></div>
 				</el-col>
 				<el-col :span="6" class="right">
-					<h3>门店销售额排名</h3>
+					<h3>门店{{ title }}排名</h3>
 					<ul>
 						<li>
 							<span class="rindex">0</span>
@@ -78,16 +80,17 @@
 
 <script>
 import echarts from "echarts";
+import dayjs from "dayjs";
 export default {
 	name: "",
 	mounted() {
 		// 初始化echarts实例
-		let barCharts = echarts.init(this.$refs.charts);
+		this.barCharts = echarts.init(this.$refs.charts);
 		// 配置数据
-		barCharts.setOption({
+		this.barCharts.setOption({
 			// 标题
 			title: {
-				text: "销售额趋势",
+				text: this.title + "趋势",
 			},
 			tooltip: {
 				trigger: "axis",
@@ -142,7 +145,49 @@ export default {
 	data() {
 		return {
 			activeName: "sale",
+			// 把柱状图挂载在实例上从而在watch中再次设置它的title
+			barCharts: null,
+			calendarDate: [],
 		};
+	},
+	computed: {
+		title() {
+			return this.activeName == "sale" ? "销售额" : "访问量";
+		},
+	},
+	watch: {
+		title() {
+			this.barCharts.setOption({
+				title: {
+					text: this.title + "趋势",
+				},
+			});
+		},
+	},
+	methods: {
+		setDay() {
+			const day = dayjs().format("YYYY-MM-DD");
+			console.log(day);
+			this.calendarDate = [day, day];
+		},
+		setWeek() {
+			// day(1)返回本周的星期一
+			const start = dayjs().day(1).format("YYYY-MM-DD");
+			const end = dayjs().day(7).format("YYYY-MM-DD");
+			this.calendarDate = [start, end];
+		},
+		setMonth() {
+			// startOf("month")返回这个月的第一天
+			const start = dayjs().startOf("month").format("YYYY-MM-DD");
+			const end = dayjs().endOf("month").format("YYYY-MM-DD");
+			this.calendarDate = [start, end];
+		},
+		setYear() {
+			// startOf("year")返回这一年的第一天
+			const start = dayjs().startOf("year").format("YYYY-MM-DD");
+			const end = dayjs().endOf("year").format("YYYY-MM-DD");
+			this.calendarDate = [start, end];
+		},
 	},
 };
 </script>
