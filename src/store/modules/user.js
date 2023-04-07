@@ -7,6 +7,12 @@ const getDefaultState = () => {
 		token: getToken(),
 		name: "",
 		avatar: "",
+		// 服务器返回的菜单信息【根据不同的角色：返回的标记信息，数组里面的元素是字符串】
+		routes: [],
+		// 角色信息
+		roles: [],
+		// 按钮权限的信息
+		buttons: [],
 	};
 };
 
@@ -19,11 +25,18 @@ const mutations = {
 	SET_TOKEN: (state, token) => {
 		state.token = token;
 	},
-	SET_NAME: (state, name) => {
-		state.name = name;
-	},
-	SET_AVATAR: (state, avatar) => {
-		state.avatar = avatar;
+	// 存储用户信息
+	SET_USERINFO: (state, userInfo) => {
+		// 用户名
+		state.name = userInfo.name;
+		// 用户头像
+		state.avatar = userInfo.avatar;
+		// 菜单权限标记
+		state.routes = userInfo.routes;
+		// 按钮权限（有些按钮有的用户有有的用户没有）标记
+		state.buttons = userInfo.buttons;
+		// 角色
+		state.roles = userInfo.roles;
 	},
 };
 
@@ -69,11 +82,8 @@ const actions = {
 					if (!data) {
 						reject("Verification failed, please Login again.");
 					}
-
-					const { name, avatar } = data;
-
-					commit("SET_NAME", name);
-					commit("SET_AVATAR", avatar);
+					// 存储用户的全部信息
+					commit("SET_USERINFO", data);
 					resolve(data);
 				})
 				.catch((error) => {
