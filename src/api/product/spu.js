@@ -54,7 +54,7 @@ export const reqDeleteSpu = (spuId) =>
 export const reqSpuSaleAttrList = (spuId) =>
 	request({ url: `/admin/product/spuSaleAttrList/${spuId}`, method: "get" });
 
-//获取SPU这儿添加SKU时的平台属性的数据
+//获取SPU这儿添加SKU时的平台属性的数据（最早在attr中用了一次这个接口）
 export const reqAttrInfoList = (category1Id, category2Id, category3Id) =>
 	request({
 		url: `/admin/product/attrInfoList/${category1Id}/${category2Id}/${category3Id}`,
