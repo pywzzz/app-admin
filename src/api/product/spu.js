@@ -19,7 +19,7 @@ export const reqTradeMarkList = () =>
 		method: "get",
 	});
 
-//获取SPU图标的接口
+//获取SPU图标的接口（在SPU这儿添加SKU时的图片也用了这个接口）（即一共在两个地方用到了）
 export const reqSpuImageList = (spuId) =>
 	request({ url: `/admin/product/spuImageList/${spuId}`, method: "get" });
 
@@ -49,10 +49,6 @@ export const reqAddOrUpdateSpu = (spuInfo) => {
 //删除SPU
 export const reqDeleteSpu = (spuId) =>
 	request({ url: `/admin/product/deleteSpu/${spuId}`, method: "delete" });
-
-//获取SPU这儿添加SKU时的图片的数据
-export const reqSpuImageLIst = (spuId) =>
-	request({ url: `/admin/product/spuImageList/${spuId}`, method: "get" });
 
 //获取SPU这儿添加SKU时的销售属性的数据
 export const reqSpuSaleAttrList = (spuId) =>
