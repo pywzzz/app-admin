@@ -24,7 +24,7 @@
 			</el-form-item>
 			<el-form-item label="SPU图片">
 				<el-upload
-					action="https://jsonplaceholder.typicode.com/posts/"
+					action="/dev-api/admin/product/fileUpload"
 					list-type="picture-card"
 					:on-preview="handlePictureCardPreview"
 					:on-remove="handleRemove"
