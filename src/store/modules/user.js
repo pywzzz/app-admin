@@ -50,7 +50,7 @@ const actions = {
 		// 解构数据
 		const { username, password } = userInfo;
 		let result = await login({ username: username.trim(), password: password });
-		if (result.code == 20000) {
+		if (result.code == 200) {
 			commit("SET_TOKEN", result.data.token);
 			setToken(result.data.token);
 			return "ok";

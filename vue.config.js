@@ -39,7 +39,7 @@ module.exports = {
 		proxy: {
 			// 在 .env.development 文件中规定了前缀为 /dev-api
 			"/dev-api": {
-				target: "http://gmall-h5-api.atguigu.cn",
+				target: "http://localhost:8888/api",
 				pathRewrite: { "^/dev-api": "" },
 			},
 		},
