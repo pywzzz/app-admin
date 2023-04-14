@@ -97,7 +97,7 @@
 							v-for="attr in skuInfo.skuAttrValueList"
 							:key="attr.id"
 							style="margin-right: 10px"
-							>{{ attr.attrId }}-{{ attr.valueId }}</el-tag
+							>{{ attr.attrName }}-{{ attr.valueName }}</el-tag
 						>
 					</template>
 				</el-col>
