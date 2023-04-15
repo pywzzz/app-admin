@@ -144,6 +144,8 @@ export default {
 			//存由三级列表筛后的，产品数据
 			attrList: [],
 			isShowTable: true,
+			// 用这个属性来区分是添加用的保存还是修改用的保存
+			addOrUpdateFlag: "",
 			attrInfo: {
 				//属性名
 				attrName: "",
@@ -207,6 +209,8 @@ export default {
 		addAttr() {
 			//切换table显示与隐藏
 			this.isShowTable = false;
+			// 标明这是在添加的界面
+			this.addOrUpdateFlag = "add";
 			//清除数据
 			this.attrInfo = {
 				attrName: "",
@@ -219,6 +223,8 @@ export default {
 		updateAttr(row) {
 			//// 切换table显示与隐藏
 			this.isShowTable = false;
+			// 标明这是在修改的界面
+			this.addOrUpdateFlag = "update";
 			// 将选中的属性赋值给attrInfo
 			/* 直接 = row 的话，你是直接修改服务器数据了，即直接修改原始数据了，会导致你不点改的同时
 			数据会直接变就，不点“保存”或“取消”按钮，数据都实时改变 */
@@ -278,8 +284,13 @@ export default {
 				}
 			);
 			try {
-				// 发请求，来保存数据
-				await this.$API.attr.reqAddOrUpdateAttr(this.attrInfo);
+				if (this.addOrUpdateFlag == "add") {
+					// 发请求，来保存数据
+					await this.$API.attr.reqAddAttr(this.attrInfo);
+				} else if (this.addOrUpdateFlag == "update") {
+					// 发请求，来保存数据
+					await this.$API.attr.reqUpdateAttr(this.attrInfo);
+				}
 				// 保存成功后通过isShowTable跳转到具体数据的展示页面
 				this.isShowTable = true;
 				// 提示消失

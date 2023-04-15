@@ -20,5 +20,9 @@ export const reqAttrList = (category1Id, category2Id, category3Id) =>
 	});
 
 //添加属性与属性值接口
-export const reqAddOrUpdateAttr = (data) =>
-	request({ url: "/admin/product/saveAttrInfo", method: "post", data });
+export const reqAddAttr = (data) =>
+	request({ url: "/admin/product/addAttrInfo", method: "post", data });
+
+//更新属性与属性值接口
+export const reqUpdateAttr = (data) =>
+	request({ url: "/admin/product/updateAttrInfo", method: "put", data });
