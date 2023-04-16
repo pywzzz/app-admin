@@ -251,6 +251,7 @@ export default {
 			//整理照片墙的数据，它需要携带imgName与imgUrl这两个参数
 			this.spu.spuImageList = this.spuImageList.map((item) => {
 				return {
+					id: item.id,
 					// 添加时的新图和修改时的旧图均有name字段
 					imgName: item.name,
 					// 如果有response字段（这个字段是图片存到服务器后服务器返回的），代表这张图是新存的

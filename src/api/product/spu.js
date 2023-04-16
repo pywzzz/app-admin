@@ -33,7 +33,7 @@ export const reqAddOrUpdateSpu = (spuInfo) => {
 	if (spuInfo.id) {
 		return request({
 			url: "/admin/product/updateSpuInfo",
-			method: "post",
+			method: "put",
 			data: spuInfo,
 		});
 	} else {
@@ -48,7 +48,7 @@ export const reqAddOrUpdateSpu = (spuInfo) => {
 
 //删除SPU
 export const reqDeleteSpu = (spuId) =>
-	request({ url: `/admin/product/deleteSpu/${spuId}`, method: "delete" });
+	request({ url: `/admin/product/deleteSpu/${spuId}`, method: "put" });
 
 //获取SPU这儿添加SKU时的图片的数据
 export const reqSpuImageLIst = (spuId) =>
