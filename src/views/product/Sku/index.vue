@@ -14,12 +14,12 @@
 				width="120"
 			></el-table-column>
 			<el-table-column
-				prop="spuId"
+				prop="spuName"
 				label="所属的spu"
 				width="120"
 			></el-table-column>
 			<el-table-column
-				prop="tmId"
+				prop="tmName"
 				label="spu所属的品牌"
 				width="120"
 			></el-table-column>
