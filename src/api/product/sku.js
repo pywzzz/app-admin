@@ -6,12 +6,16 @@ export const reqSkuList = (page, limit) =>
 
 //上架sku
 export const reqSale = (skuId) =>
-	request({ url: `/admin/product/onSale/${skuId}`, method: "get" });
+	request({ url: `/admin/product/onSale/${skuId}`, method: "put" });
 
 //下架sku
 export const reqCancel = (skuId) =>
-	request({ url: `/admin/product/cancelSale/${skuId}`, method: "get" });
+	request({ url: `/admin/product/cancelSale/${skuId}`, method: "put" });
 
 //获取某个sku的详情的接口
 export const reqSkuById = (skuId) =>
 	request({ url: `/admin/product/getSkuById/${skuId}`, method: "get" });
+
+//删除某个sku
+export const reqDeleteSku = (skuId) =>
+	request({ url: `/admin/product/deleteSku/${skuId}`, method: "put" });

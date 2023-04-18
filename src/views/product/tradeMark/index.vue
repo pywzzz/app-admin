@@ -45,16 +45,23 @@
 						type="warning"
 						size="mini"
 						icon="el-icon-edit"
+						title="修改品牌"
 						@click="updateTrademark(row)"
-						>修改</el-button
-					>
+					></el-button>
 					<el-button
 						type="danger"
 						size="mini"
 						icon="el-icon-delete"
+						title="删除品牌"
 						@click="deleteTrademark(row)"
-						>删除</el-button
-					>
+					></el-button>
+					<el-button
+						type="info"
+						size="mini"
+						icon="el-icon-info"
+						title="查看当前品牌下的全部spu"
+						@click="getAllSpuInTrademark(row)"
+					></el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -117,6 +124,23 @@
 				>
 			</div>
 		</el-dialog>
+		<!-- 展示一个品牌中的所含有的所有SPU -->
+		<el-dialog
+			:title="`${spuListTitle}的spu列表`"
+			:visible.sync="dialogTableVisible"
+			:before-close="close"
+		>
+			<el-table :data="spuList" style="width: 100%" border v-loading="loading">
+				<el-table-column prop="spuName" label="spu名称" width="width">
+				</el-table-column>
+				<el-table-column
+					prop="spuName"
+					label="这里应该弄个下拉框来改变品牌"
+					width="width"
+				>
+				</el-table-column>
+			</el-table>
+		</el-dialog>
 	</div>
 </template>
 
@@ -139,6 +163,13 @@ export default {
 			// 一页展示多少数据
 			limit: 5,
 			total: 0,
+			// 控制对话框的显示与隐藏
+			dialogTableVisible: false,
+			loading: true,
+			// 存储一个品牌中含的那些SPU
+			spuList: [],
+			// 这个是展示SPU的那个对话框的标题
+			spuListTitle: "",
 			// 表格中的列表部分展示的数据
 			list: [],
 			// 控制对话框显示与否
@@ -242,11 +273,15 @@ export default {
 		},
 		deleteTrademark(row) {
 			// 弹框
-			this.$confirm(`确定删除“${row.tmName}”吗？`, "提示", {
-				confirmButtonText: "确定",
-				cancelButtonText: "取消",
-				type: "warning",
-			})
+			this.$confirm(
+				`确定删除吗（需要先删除品牌为“${row.tmName}”的spu或修改此spu的品牌）？`,
+				"提示",
+				{
+					confirmButtonText: "确定",
+					cancelButtonText: "取消",
+					type: "warning",
+				}
+			)
 				.then(async () => {
 					// 点击“取消”按钮触发then
 					await this.$API.trademark.reqDeleteTrademark(row.id);
@@ -268,6 +303,28 @@ export default {
 						message: "已取消删除",
 					});
 				});
+		},
+		// 查看一个品牌中含有的所有SPU
+		async getAllSpuInTrademark(row) {
+			// 点击后显示对话框
+			this.dialogTableVisible = true;
+			// 存一下对话框标题
+			this.spuListTitle = row.tmName;
+			// 传入的是品牌的id
+			let result = await this.$API.trademark.reqSpuList(row.id);
+			if (result.code == 200) {
+				this.spuList = result.data;
+				this.loading = false;
+			}
+		},
+		// 关闭对话框时执这个
+		close(done) {
+			// 让loading属性再次变为真
+			this.loading = true;
+			// 清除sku列表的数据
+			this.spuList = [];
+			// 关闭对话框
+			done();
 		},
 	},
 	mounted() {

@@ -33,3 +33,7 @@ export const reqDeleteTrademark = (id) =>
 		url: `/admin/product/baseTrademark/remove/${id}`,
 		method: "delete",
 	});
+
+//获取品牌下的所有spu
+export const reqSpuList = (tmId) =>
+	request({ url: `/admin/product/spuInTrademark/${tmId}`, method: "get" });

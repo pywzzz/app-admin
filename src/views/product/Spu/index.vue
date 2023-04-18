@@ -55,7 +55,10 @@
 								title="查看当前spu全部sku列表"
 								@click="getAllSkuInSpu(row)"
 							></el-button>
-							<el-popconfirm title="确定删除吗？" @onConfirm="deleteSpu(row)">
+							<el-popconfirm
+								title="确定删除吗（这个spu下的所有sku也会被删除）？"
+								@onConfirm="deleteSpu(row)"
+							>
 								<!-- 按钮 -->
 								<el-button
 									type="danger"
@@ -63,6 +66,7 @@
 									icon="el-icon-delete"
 									title="删除spu"
 									slot="reference"
+									style="margin-left: 10px"
 								></el-button>
 							</el-popconfirm>
 						</template>

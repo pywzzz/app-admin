@@ -44,11 +44,18 @@
 								@click="updateAttr(row)"
 							></el-button>
 							<!-- 删除按钮 -->
-							<el-button
-								type="danger"
-								size="mini"
-								icon="el-icon-delete"
-							></el-button>
+							<el-popconfirm
+								title="确定删除吗（需要先删除拥有此属性的sku）？"
+								@onConfirm="deleteAttr(row)"
+							>
+								<el-button
+									type="danger"
+									size="mini"
+									icon="el-icon-delete"
+									slot="reference"
+									style="margin-left: 10px"
+								></el-button>
+							</el-popconfirm>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -299,6 +306,13 @@ export default {
 				this.getAttrList();
 			} catch (error) {
 				this.$message("保存失败");
+			}
+		},
+		async deleteAttr(row) {
+			let result = await this.$API.attr.reqDeleteAttr(row.id);
+			if (result.code == 200) {
+				this.$message({ type: "success", message: "删除成功" });
+				this.getAttrList();
 			}
 		},
 	},

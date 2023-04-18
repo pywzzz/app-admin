@@ -26,3 +26,10 @@ export const reqAddAttr = (data) =>
 //更新属性与属性值接口
 export const reqUpdateAttr = (data) =>
 	request({ url: "/admin/product/updateAttrInfo", method: "put", data });
+
+//删除某个attr
+export const reqDeleteAttr = (attrNameId) =>
+	request({
+		url: `/admin/product/deleteAttrInfo/${attrNameId}`,
+		method: "put",
+	});

@@ -11,14 +11,24 @@
 			<el-table-column
 				prop="skuName"
 				label="名称"
-				width="width"
+				width="120"
+			></el-table-column>
+			<el-table-column
+				prop="spuId"
+				label="所属的spu"
+				width="120"
+			></el-table-column>
+			<el-table-column
+				prop="tmId"
+				label="spu所属的品牌"
+				width="120"
 			></el-table-column>
 			<el-table-column
 				prop="skuDesc"
 				label="描述"
 				width="width"
 			></el-table-column>
-			<el-table-column label="默认图片" width="110">
+			<el-table-column label="默认图片" width="100">
 				<template slot-scope="{ row }">
 					<img
 						:src="row.skuDefaultImg"
@@ -27,23 +37,33 @@
 					/>
 				</template>
 			</el-table-column>
-			<el-table-column prop="weight" label="重量" width="80"></el-table-column>
-			<el-table-column prop="price" label="价格" width="80"></el-table-column>
-			<el-table-column label="操作" width="width">
+			<el-table-column
+				prop="weight"
+				label="重量(千克)"
+				width="100"
+			></el-table-column>
+			<el-table-column
+				prop="price"
+				label="价格(元)"
+				width="100"
+			></el-table-column>
+			<el-table-column label="操作" width="250">
 				<template slot-scope="{ row }">
-					<!-- isSale是服务器返回的数据中的一个属性，1表示已上架，0表示已下架 -->
-					<el-button
-						type="success"
-						icon="el-icon-sort-down"
-						size="mini"
-						v-if="row.isSale == 0"
-						@click="shelveSku(row)"
-					></el-button>
 					<!-- isSale是服务器返回的数据中的一个属性，1表示已上架，0表示已下架 -->
 					<el-button
 						type="success"
 						icon="el-icon-sort-up"
 						size="mini"
+						title="点我上架"
+						v-if="row.isSale == 0"
+						@click="shelveSku(row)"
+					></el-button>
+					<!-- isSale是服务器返回的数据中的一个属性，1表示已上架，0表示已下架 -->
+					<el-button
+						type="warning"
+						icon="el-icon-sort-down"
+						size="mini"
+						title="点我下架"
 						@click="disableSku(row)"
 						v-else
 					></el-button>
@@ -54,11 +74,16 @@
 						size="mini"
 						@click="getSkuInfo(row)"
 					></el-button>
-					<el-button
-						type="danger"
-						icon="el-icon-delete"
-						size="mini"
-					></el-button>
+					<el-popconfirm title="确定删除吗？" @onConfirm="deleteSku(row)">
+						<!-- 按钮 -->
+						<el-button
+							type="danger"
+							size="mini"
+							icon="el-icon-delete"
+							slot="reference"
+							style="margin-left: 10px"
+						></el-button>
+					</el-popconfirm>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -77,19 +102,11 @@
 		<!-- sku详情 -->
 		<el-drawer :visible.sync="show" :show-close="false" size="50%">
 			<el-row>
-				<el-col :span="5">名称</el-col>
-				<el-col :span="16">{{ skuInfo.skuName }}</el-col>
+				<el-col :span="5">商品状态：</el-col>
+				<el-col :span="16">{{ saleStatus }}</el-col>
 			</el-row>
 			<el-row>
-				<el-col :span="5">描述</el-col>
-				<el-col :span="16">{{ skuInfo.skuDesc }}</el-col>
-			</el-row>
-			<el-row>
-				<el-col :span="5">价格</el-col>
-				<el-col :span="16">{{ skuInfo.price }}元</el-col>
-			</el-row>
-			<el-row>
-				<el-col :span="5">平台属性</el-col>
+				<el-col :span="5">平台属性：</el-col>
 				<el-col :span="16">
 					<template>
 						<el-tag
@@ -97,8 +114,22 @@
 							v-for="attr in skuInfo.skuAttrValueList"
 							:key="attr.id"
 							style="margin-right: 10px"
-							>{{ attr.attrId }}-{{ attr.valueId }}</el-tag
+							>{{ attr.attrName }}：{{ attr.valueName }}</el-tag
 						>
+					</template>
+				</el-col>
+			</el-row>
+			<el-row>
+				<el-col :span="5">销售属性：</el-col>
+				<el-col :span="16">
+					<template>
+						<el-tag
+							type="success"
+							v-for="saleAttr in skuInfo.skuSaleAttrValueList"
+							:key="saleAttr.id"
+							style="margin-right: 10px"
+							>{{ saleAttr.saleAttrName }}：{{ saleAttr.saleAttrValueName }}
+						</el-tag>
 					</template>
 				</el-col>
 			</el-row>
@@ -110,7 +141,10 @@
 							v-for="item in skuInfo.skuImageList"
 							:key="item.id"
 						>
-							<img :src="item.imgUrl" width="100%" />
+							<img
+								:src="item.imgUrl"
+								style="object-fit: contain; width: 100%; height: 100%"
+							/>
 						</el-carousel-item>
 					</el-carousel>
 				</el-col>
@@ -137,6 +171,11 @@ export default {
 			// 控制sku详情信息这部分的显示与否
 			show: false,
 		};
+	},
+	computed: {
+		saleStatus() {
+			return this.skuInfo.isSale == 1 ? "已上架" : "已下架";
+		},
 	},
 	methods: {
 		handleSizeChange(limit) {
@@ -177,6 +216,14 @@ export default {
 			let result = await this.$API.sku.reqSkuById(sku.id);
 			if (result.code == 200) {
 				this.skuInfo = result.data;
+			}
+		},
+		async deleteSku(row) {
+			let result = await this.$API.sku.reqDeleteSku(row.id);
+			if (result.code == 200) {
+				this.$message({ type: "success", message: "删除成功" });
+				// 代表SPU个数大于1，则删除后停留在当前页，如果SPU个数小于1，则删除后回到上一页
+				this.getSkuList(this.records.length > 1 ? this.page : this.page - 1);
 			}
 		},
 	},
