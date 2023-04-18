@@ -37,3 +37,11 @@ export const reqDeleteTrademark = (id) =>
 //获取品牌下的所有spu
 export const reqSpuList = (tmId) =>
 	request({ url: `/admin/product/spuInTrademark/${tmId}`, method: "get" });
+
+//在SPU这儿添加SKU后，保存数据的接口
+export const reqUpdateSpuTrademark = (updateInfo) =>
+	request({
+		url: "/admin/product/updateSpuTrademark",
+		method: "put",
+		data: updateInfo,
+	});

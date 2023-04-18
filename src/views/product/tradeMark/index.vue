@@ -133,13 +133,20 @@
 			<el-table :data="spuList" style="width: 100%" border v-loading="loading">
 				<el-table-column prop="spuName" label="spu名称" width="width">
 				</el-table-column>
-				<el-table-column
-					prop="spuName"
-					label="这里应该弄个下拉框来改变品牌"
-					width="width"
-				>
+				<el-table-column label="所属品牌" width="width">
+					<template slot-scope="scope">
+						<el-select placeholder="请选择品牌" v-model="scope.row.tmId">
+							<el-option
+								v-for="tm in tradeMarkList"
+								:key="tm.id"
+								:label="tm.tmName"
+								:value="tm.id"
+							></el-option>
+						</el-select>
+					</template>
 				</el-table-column>
 			</el-table>
+			<el-button type="primary" @click="saveData">保存</el-button>
 		</el-dialog>
 	</div>
 </template>
@@ -172,6 +179,8 @@ export default {
 			spuListTitle: "",
 			// 表格中的列表部分展示的数据
 			list: [],
+			// 存储所有的品牌
+			tradeMarkList: [],
 			// 控制对话框显示与否
 			dialogFormVisible: false,
 			// 收集品牌信息（其中的字段是和后台相呼应的，不能随便写）
@@ -310,6 +319,11 @@ export default {
 			this.dialogTableVisible = true;
 			// 存一下对话框标题
 			this.spuListTitle = row.tmName;
+			// 获取品牌的信息
+			let tradeMarkResult = await this.$API.spu.reqTradeMarkList();
+			if (tradeMarkResult.code == 200) {
+				this.tradeMarkList = tradeMarkResult.data;
+			}
 			// 传入的是品牌的id
 			let result = await this.$API.trademark.reqSpuList(row.id);
 			if (result.code == 200) {
@@ -325,6 +339,25 @@ export default {
 			this.spuList = [];
 			// 关闭对话框
 			done();
+		},
+		async saveData() {
+			const updateInfo = {
+				updateList: this.spuList.map((item) => {
+					return {
+						spuId: item.id,
+						tmId: item.tmId,
+					};
+				}),
+			};
+			let result = await this.$API.trademark.reqUpdateSpuTrademark(updateInfo);
+			if (result.code == 200) {
+				// 让loading属性再次变为真
+				this.loading = true;
+				// 清除sku列表的数据
+				this.spuList = [];
+				// 关闭对话框
+				this.dialogTableVisible = false;
+			}
 		},
 	},
 	mounted() {
