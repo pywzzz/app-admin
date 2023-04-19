@@ -215,6 +215,8 @@ export default {
 			};
 			// 添加新的销售属性
 			this.spu.spuSaleAttrList.push(newSaleAttr);
+			// 添完这个销售属性就不能再添了，所以要置空
+			this.attrIdAndAttrName = "";
 		},
 		// 点击添加按钮后触发这个
 		addSaleAttrValue(row) {
