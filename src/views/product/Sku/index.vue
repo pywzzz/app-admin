@@ -1,161 +1,178 @@
 <template>
 	<div>
-		<!-- 表格 -->
-		<el-table style="width: 100%" border :data="records">
-			<el-table-column
-				type="index"
-				label="序号"
-				width="80"
-				align="center"
-			></el-table-column>
-			<el-table-column
-				prop="skuName"
-				label="名称"
-				width="120"
-			></el-table-column>
-			<el-table-column
-				prop="spuName"
-				label="所属的spu"
-				width="120"
-			></el-table-column>
-			<el-table-column
-				prop="tmName"
-				label="spu所属的品牌"
-				width="120"
-			></el-table-column>
-			<el-table-column
-				prop="skuDesc"
-				label="描述"
-				width="width"
-			></el-table-column>
-			<el-table-column label="默认图片" width="100">
-				<template slot-scope="{ row }">
-					<img
-						:src="row.skuDefaultImg"
-						alt=""
-						style="width: 80px; height: 80px"
-					/>
-				</template>
-			</el-table-column>
-			<el-table-column
-				prop="weight"
-				label="重量(千克)"
-				width="100"
-			></el-table-column>
-			<el-table-column
-				prop="price"
-				label="价格(元)"
-				width="100"
-			></el-table-column>
-			<el-table-column label="操作" width="250">
-				<template slot-scope="{ row }">
-					<!-- isSale是服务器返回的数据中的一个属性，1表示已上架，0表示已下架 -->
-					<el-button
-						type="success"
-						icon="el-icon-sort-up"
-						size="mini"
-						title="点我上架"
-						v-if="row.isSale == 0"
-						@click="shelveSku(row)"
-					></el-button>
-					<!-- isSale是服务器返回的数据中的一个属性，1表示已上架，0表示已下架 -->
-					<el-button
-						type="warning"
-						icon="el-icon-sort-down"
-						size="mini"
-						title="点我下架"
-						@click="disableSku(row)"
-						v-else
-					></el-button>
-					<el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-					<el-button
-						type="info"
-						icon="el-icon-info"
-						size="mini"
-						@click="getSkuInfo(row)"
-					></el-button>
-					<el-popconfirm title="确定删除吗？" @onConfirm="deleteSku(row)">
-						<!-- 按钮 -->
+		<div v-show="scene == 0">
+			<!-- 表格 -->
+			<el-table style="width: 100%" border :data="records">
+				<el-table-column
+					type="index"
+					label="序号"
+					width="80"
+					align="center"
+				></el-table-column>
+				<el-table-column
+					prop="skuName"
+					label="名称"
+					width="120"
+				></el-table-column>
+				<el-table-column
+					prop="spuName"
+					label="所属的spu"
+					width="120"
+				></el-table-column>
+				<el-table-column
+					prop="tmName"
+					label="spu所属的品牌"
+					width="120"
+				></el-table-column>
+				<el-table-column
+					prop="skuDesc"
+					label="描述"
+					width="width"
+				></el-table-column>
+				<el-table-column label="默认图片" width="100">
+					<template slot-scope="{ row }">
+						<img
+							:src="row.skuDefaultImg"
+							alt=""
+							style="width: 80px; height: 80px"
+						/>
+					</template>
+				</el-table-column>
+				<el-table-column
+					prop="weight"
+					label="重量(千克)"
+					width="100"
+				></el-table-column>
+				<el-table-column
+					prop="price"
+					label="价格(元)"
+					width="100"
+				></el-table-column>
+				<el-table-column label="操作" width="250">
+					<template slot-scope="{ row }">
+						<!-- isSale是服务器返回的数据中的一个属性，1表示已上架，0表示已下架 -->
 						<el-button
-							type="danger"
+							type="success"
+							icon="el-icon-sort-up"
 							size="mini"
-							icon="el-icon-delete"
-							slot="reference"
-							style="margin-left: 10px"
+							title="点我上架"
+							v-if="row.isSale == 0"
+							@click="shelveSku(row)"
 						></el-button>
-					</el-popconfirm>
-				</template>
-			</el-table-column>
-		</el-table>
-		<!-- 分页器 -->
-		<el-pagination
-			layout="prev, pager, next, jumper, ->, sizes, total"
-			style="text-align: center"
-			:current-page="page"
-			:page-sizes="[3, 5, 10]"
-			:page-size="limit"
-			:total="total"
-			@current-change="getSkuList"
-			@size-change="handleSizeChange"
-		>
-		</el-pagination>
-		<!-- sku详情 -->
-		<el-drawer :visible.sync="show" :show-close="false" size="50%">
-			<el-row>
-				<el-col :span="5">商品状态：</el-col>
-				<el-col :span="16">{{ saleStatus }}</el-col>
-			</el-row>
-			<el-row>
-				<el-col :span="5">平台属性：</el-col>
-				<el-col :span="16">
-					<template>
-						<el-tag
-							type="success"
-							v-for="attr in skuInfo.skuAttrValueList"
-							:key="attr.id"
-							style="margin-right: 10px"
-							>{{ attr.attrName }}：{{ attr.valueName }}</el-tag
-						>
+						<!-- isSale是服务器返回的数据中的一个属性，1表示已上架，0表示已下架 -->
+						<el-button
+							type="warning"
+							icon="el-icon-sort-down"
+							size="mini"
+							title="点我下架"
+							@click="disableSku(row)"
+							v-else
+						></el-button>
+						<el-button
+							type="primary"
+							icon="el-icon-edit"
+							size="mini"
+							@click="updateSku(row)"
+						></el-button>
+						<el-button
+							type="info"
+							icon="el-icon-info"
+							size="mini"
+							@click="getSkuInfo(row)"
+						></el-button>
+						<el-popconfirm title="确定删除吗？" @onConfirm="deleteSku(row)">
+							<!-- 按钮 -->
+							<el-button
+								type="danger"
+								size="mini"
+								icon="el-icon-delete"
+								slot="reference"
+								style="margin-left: 10px"
+							></el-button>
+						</el-popconfirm>
 					</template>
-				</el-col>
-			</el-row>
-			<el-row>
-				<el-col :span="5">销售属性：</el-col>
-				<el-col :span="16">
-					<template>
-						<el-tag
-							type="success"
-							v-for="saleAttr in skuInfo.skuSaleAttrValueList"
-							:key="saleAttr.id"
-							style="margin-right: 10px"
-							>{{ saleAttr.saleAttrName }}：{{ saleAttr.saleAttrValueName }}
-						</el-tag>
-					</template>
-				</el-col>
-			</el-row>
-			<el-row>
-				<el-col :span="5">商品图片</el-col>
-				<el-col :span="16">
-					<el-carousel height="450px" border>
-						<el-carousel-item
-							v-for="item in skuInfo.skuImageList"
-							:key="item.id"
-						>
-							<img
-								:src="item.imgUrl"
-								style="object-fit: contain; width: 100%; height: 100%"
-							/>
-						</el-carousel-item>
-					</el-carousel>
-				</el-col>
-			</el-row>
-		</el-drawer>
+				</el-table-column>
+			</el-table>
+			<!-- 分页器 -->
+			<el-pagination
+				layout="prev, pager, next, jumper, ->, sizes, total"
+				style="text-align: center"
+				:current-page="page"
+				:page-sizes="[3, 5, 10]"
+				:page-size="limit"
+				:total="total"
+				@current-change="getSkuList"
+				@size-change="handleSizeChange"
+			>
+			</el-pagination>
+			<!-- sku详情 -->
+			<el-drawer :visible.sync="show" :show-close="false" size="50%">
+				<el-row>
+					<el-col :span="5">商品状态：</el-col>
+					<el-col :span="16">{{ saleStatus }}</el-col>
+				</el-row>
+				<el-row>
+					<el-col :span="5">平台属性：</el-col>
+					<el-col :span="16">
+						<template>
+							<el-tag
+								type="success"
+								v-for="attr in skuInfo.skuAttrValueList"
+								:key="attr.id"
+								style="margin-right: 10px"
+								>{{ attr.attrName }}：{{ attr.valueName }}</el-tag
+							>
+						</template>
+					</el-col>
+				</el-row>
+				<el-row>
+					<el-col :span="5">销售属性：</el-col>
+					<el-col :span="16">
+						<template>
+							<el-tag
+								type="success"
+								v-for="saleAttr in skuInfo.skuSaleAttrValueList"
+								:key="saleAttr.id"
+								style="margin-right: 10px"
+								>{{ saleAttr.saleAttrName }}：{{ saleAttr.saleAttrValueName }}
+							</el-tag>
+						</template>
+					</el-col>
+				</el-row>
+				<el-row>
+					<el-col :span="5">商品图片</el-col>
+					<el-col :span="16">
+						<el-carousel height="450px" border>
+							<el-carousel-item
+								v-for="item in skuInfo.skuImageList"
+								:key="item.id"
+							>
+								<img
+									:src="item.imgUrl"
+									style="object-fit: contain; width: 100%; height: 100%"
+								/>
+							</el-carousel-item>
+						</el-carousel>
+					</el-col>
+				</el-row>
+			</el-drawer>
+		</div>
+		<!-- 修改sku -->
+		<UpdateSku
+			v-show="scene == 1"
+			ref="updateSku"
+			@changeScene="changeScene"
+		></UpdateSku>
 	</div>
 </template>
 
 <script>
+import UpdateSku from "./UpdateSku";
 export default {
 	name: "Sku",
+	components: {
+		UpdateSku,
+	},
 	data() {
 		return {
 			// 当前是第几页
@@ -170,6 +187,8 @@ export default {
 			skuInfo: {},
 			// 控制sku详情信息这部分的显示与否
 			show: false,
+			// 0代表显示“数据列表"，1代表显示“修改SKU”
+			scene: 0,
 		};
 	},
 	computed: {
@@ -225,6 +244,14 @@ export default {
 				// 代表SPU个数大于1，则删除后停留在当前页，如果SPU个数小于1，则删除后回到上一页
 				this.getSkuList(this.records.length > 1 ? this.page : this.page - 1);
 			}
+		},
+		updateSku(row) {
+			this.scene = 1;
+			this.$refs.updateSku.getData(row);
+		},
+		// 这个是SkuForm的取消按钮用的
+		changeScene(scene) {
+			this.scene = scene;
 		},
 	},
 	mounted() {
