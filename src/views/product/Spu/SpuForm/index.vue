@@ -225,13 +225,16 @@ export default {
 			this.$set(row, "inputVisible", true);
 			// 通过响应式数据inputValue字段收集新增的属性值内容（默认为空）
 			this.$set(row, "inputValue", "");
+			this.$nextTick(() => {
+				this.$refs.saveTagInput.focus();
+			});
 		},
 		handleInputConfirm(row) {
 			// 解构
 			const { baseSaleAttrId, inputValue } = row;
 			// 新增的属性值不能为空
 			if (inputValue.trim() == "") {
-				this.$message("属性值不能为空");
+				row.inputVisible = false;
 				return;
 			}
 			// 属性值不能重复
