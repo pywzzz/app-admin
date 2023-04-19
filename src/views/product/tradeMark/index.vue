@@ -280,38 +280,50 @@ export default {
 				}
 			});
 		},
-		deleteTrademark(row) {
-			// 弹框
-			this.$confirm(
-				`确定删除吗（需要先删除品牌为“${row.tmName}”的spu或修改此spu的品牌）？`,
-				"提示",
-				{
+		async deleteTrademark(row) {
+			// 先获取这个品牌下的spu，然后主要用处是判它包含几个元素
+			let result = await this.$API.trademark.reqSpuList(row.id);
+			if (result.code == 200) {
+				this.spuList = result.data;
+			}
+			// 如果不为空
+			if (this.spuList.length > 0) {
+				this.$alert(`“${row.tmName}”下存在spu，无法删除。`, "提示", {
+					confirmButtonText: "查看",
+					type: "warning",
+				})
+					.then(() => {
+						this.getAllSpuInTrademark(row);
+					})
+					.catch(() => {
+						// 清除spu列表的数据
+						this.spuList = [];
+					});
+			} else {
+				// 弹框
+				this.$confirm(`确定删除“${row.tmName}”吗？`, "提示", {
 					confirmButtonText: "确定",
 					cancelButtonText: "取消",
 					type: "warning",
-				}
-			)
-				.then(async () => {
-					// 点击“取消”按钮触发then
-					await this.$API.trademark.reqDeleteTrademark(row.id);
-					this.$message({
-						type: "success",
-						message: "删除成功!",
-					});
-					// 如果是本页的数据个数大于1，则停留在当前页，否则停在前一页
-					this.handleCurrentChange(
-						this.list.lenght > 1 ? this.page : this.page - 1
-					);
-					// 弄完后重新获取数据以供展示
-					this.getPageList();
 				})
-				.catch(() => {
-					// 点击“确定”按钮触发catch
-					this.$message({
-						type: "info",
-						message: "已取消删除",
+					.then(async () => {
+						// 点击“确定”按钮触发then
+						await this.$API.trademark.reqDeleteTrademark(row.id);
+						this.$message({
+							type: "success",
+							message: "删除成功!",
+						});
+						// 如果是本页的数据个数大于1，则停留在当前页，否则停在前一页
+						this.handleCurrentChange(
+							this.list.lenght > 1 ? this.page : this.page - 1
+						);
+						// 弄完后重新获取数据以供展示
+						this.getPageList();
+					})
+					.catch(() => {
+						// 点击“取消”按钮触发catch
 					});
-				});
+			}
 		},
 		// 查看一个品牌中含有的所有SPU
 		async getAllSpuInTrademark(row) {
@@ -335,7 +347,7 @@ export default {
 		close(done) {
 			// 让loading属性再次变为真
 			this.loading = true;
-			// 清除sku列表的数据
+			// 清除spu列表的数据
 			this.spuList = [];
 			// 关闭对话框
 			done();
