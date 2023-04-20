@@ -60,6 +60,7 @@
 					border
 					:data="spuImageList"
 					@selection-change="handleSelectionChange"
+					ref="imageTable"
 				>
 					<el-table-column
 						type="selection"
@@ -73,7 +74,7 @@
 					</el-table-column>
 					<el-table-column
 						prop="imgName"
-						label="名称"
+						label="图片名称"
 						width="width"
 					></el-table-column>
 					<el-table-column prop="" label="操作" width="width">
@@ -102,6 +103,10 @@ export default {
 	name: "",
 	data() {
 		return {
+			// 下面三个用于初始化平台属性列表、销售属性列表、图片列表
+			initAttr: [],
+			initSaleAttr: [],
+			initImg: [],
 			// 存储图片的信息
 			spuImageList: [],
 			// 存储销售是属性
@@ -146,6 +151,14 @@ export default {
 			// 这个好像没用到
 			this.skuInfo.skuDefaultImg = skuInfo.skuDefaultImg;
 
+			// 获取SKU数据
+			let result = await this.$API.sku.reqSkuById(skuInfo.id);
+			if (result.code == 200) {
+				this.initAttr = result.data.skuAttrValueList;
+				this.initSaleAttr = result.data.skuSaleAttrValueList;
+				this.initImg = result.data.skuImageList;
+			}
+
 			// 获取图片的数据
 			let result0 = await this.$API.spu.reqSpuImageLIst(skuInfo.spuId);
 			if (result0.code == 200) {
@@ -156,16 +169,69 @@ export default {
 				});
 				this.spuImageList = list;
 			}
+
+			// 下面是为图片列表弄上这个sku本身已经勾选的图片及默认按钮
+			this.initImg.forEach((initImage) => {
+				const spuImage = this.spuImageList.find(
+					(image) => image.imgUrl === initImage.imgUrl
+				);
+				if (spuImage) {
+					// 弄默认按钮
+					spuImage.isDefault = initImage.isDefault;
+					// 勾选的逻辑必须写在$nextTick中
+					this.$nextTick(() => {
+						this.$refs.imageTable.toggleRowSelection(spuImage, true);
+					});
+				}
+			});
+
 			// 获取销售属性的数据
 			let result1 = await this.$API.spu.reqSpuSaleAttrList(skuInfo.spuId);
 			if (result1.code == 200) {
-				this.spuSaleAttrList = result1.data;
+				// saleAttrInfo是result1.data数组中的元素（这个元素是一个对象）
+				this.spuSaleAttrList = result1.data.map((saleAttrInfo) => {
+					// 如果找到了 saleAttrId=id 的那些，就放在foundSaleAttr数组中
+					const foundSaleAttr = this.initSaleAttr.find(
+						(initSaleAttrItem) =>
+							initSaleAttrItem.saleAttrId === saleAttrInfo.id
+					);
+					// 给这些找到的，设置attrIdAndValueId
+					if (foundSaleAttr) {
+						return {
+							// 先创建一个全新的，但内容和此次遍历相同的saleAttrInfo
+							...saleAttrInfo,
+							// 向里面加个attrIdAndValueId字段
+							attrIdAndValueId: `${foundSaleAttr.saleAttrId}:${foundSaleAttr.saleAttrValueId}`,
+						};
+					} else {
+						// 如果没有找到匹配的元素，返回原始的saleAttrInfo
+						return saleAttrInfo;
+					}
+				});
 			}
 			// 获取平台属性的数据
 			// 这里应该填category1、2、3的id
 			let result2 = await this.$API.spu.reqAttrInfoList(74, 75, 76);
 			if (result2.code == 200) {
-				this.attrInfoList = result2.data;
+				// attrInfo是result2.data数组中的元素（这个元素是一个对象）
+				this.attrInfoList = result2.data.map((attrInfo) => {
+					// 如果找到了 attrId=id 的那些，就放在foundAttr数组中
+					const foundAttr = this.initAttr.find(
+						(initAttrItem) => initAttrItem.attrId === attrInfo.id
+					);
+					// 给这些找到的，设置attrIdAndValueId
+					if (foundAttr) {
+						return {
+							// 先创建一个全新的，但内容和此次遍历相同的attrInfo
+							...attrInfo,
+							// 向里面加个attrIdAndValueId字段
+							attrIdAndValueId: `${foundAttr.attrId}:${foundAttr.valueId}`,
+						};
+					} else {
+						// 如果没有找到匹配的元素，返回原始的attrInfo
+						return attrInfo;
+					}
+				});
 			}
 		},
 		// 这是那个复选框的回调，这个params是勾中的那一堆东西的数据
