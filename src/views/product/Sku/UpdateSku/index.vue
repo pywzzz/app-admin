@@ -81,6 +81,7 @@
 						<template slot-scope="{ row }">
 							<el-button
 								type="primary"
+								:disabled="!row.isSelected"
 								v-if="row.isDefault == 0"
 								@click="changeDefault(row)"
 								>设置默认</el-button
@@ -162,10 +163,12 @@ export default {
 			// 获取图片的数据
 			let result0 = await this.$API.spu.reqSpuImageLIst(skuInfo.spuId);
 			if (result0.code == 200) {
-				// 收集数据的同时为每个图片数据加个叫isDefault的属性，用来今后确定这是否是默认图片
 				let list = result0.data;
 				list.forEach((item) => {
+					// 收集数据的同时为每个图片数据加个叫isDefault的属性，用来今后确定这是否是默认图片
 					item.isDefault = 0;
+					// 收集数据的同时为每个图片数据加个叫isSelected的属性，用于动态控制“设为默认”按钮是否可被点击
+					item.isSelected = false;
 				});
 				this.spuImageList = list;
 			}
@@ -236,6 +239,10 @@ export default {
 		},
 		// 这是那个复选框的回调，这个params是勾中的那一堆东西的数据
 		handleSelectionChange(params) {
+			this.spuImageList.forEach((spuImage) => {
+				// 如果includes(spuImage)，那就意味着被勾选了，则返回true，刚好赋给isSelected
+				spuImage.isSelected = params.includes(spuImage);
+			});
 			this.imageList = params;
 		},
 		changeDefault(row) {
