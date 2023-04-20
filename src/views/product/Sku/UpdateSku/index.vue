@@ -116,6 +116,7 @@ export default {
 			attrInfoList: [],
 			// 收集sku数据的字段
 			skuInfo: {
+				id: 0,
 				spuName: "",
 				spuId: 0,
 				tmId: 0,
@@ -140,6 +141,7 @@ export default {
 	},
 	methods: {
 		async getData(skuInfo) {
+			this.skuInfo.id = skuInfo.id;
 			this.skuInfo.spuId = skuInfo.spuId;
 			this.skuInfo.tmId = skuInfo.tmId;
 			this.skuInfo.spuName = skuInfo.spuName;
@@ -299,9 +301,9 @@ export default {
 				};
 			});
 			// 发请求
-			let result = await this.$API.spu.reqAddSku(skuInfo);
+			let result = await this.$API.sku.reqUpdateSku(skuInfo);
 			if (result.code == 200) {
-				this.$message({ type: "success", message: "保存SKU成功" });
+				this.$message({ type: "success", message: "保存成功" });
 				// 添加成功后切一下scene
 				this.$emit("changeScene", 0);
 			}

@@ -19,3 +19,7 @@ export const reqSkuById = (skuId) =>
 //删除某个sku
 export const reqDeleteSku = (skuId) =>
 	request({ url: `/admin/product/deleteSku/${skuId}`, method: "put" });
+
+//更新某个sku
+export const reqUpdateSku = (skuInfo) =>
+	request({ url: "/admin/product/updateSku", method: "put", data: skuInfo });
