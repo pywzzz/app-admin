@@ -179,11 +179,11 @@ export default {
 					(image) => image.imgUrl === initImage.imgUrl
 				);
 				if (spuImage) {
-					// 弄默认按钮
-					spuImage.isDefault = initImage.isDefault;
 					// 勾选的逻辑必须写在$nextTick中
 					this.$nextTick(() => {
 						this.$refs.imageTable.toggleRowSelection(spuImage, true);
+						// 弄默认按钮
+						spuImage.isDefault = initImage.isDefault;
 					});
 				}
 			});
@@ -242,6 +242,15 @@ export default {
 			this.spuImageList.forEach((spuImage) => {
 				// 如果includes(spuImage)，那就意味着被勾选了，则返回true，刚好赋给isSelected
 				spuImage.isSelected = params.includes(spuImage);
+
+				// 如果默认图片被取消勾选，撤销操作并显示警告
+				const isSelected = params.includes(spuImage);
+				if (spuImage.isDefault === 1 && !isSelected) {
+					// 重新勾上
+					this.$refs.imageTable.toggleRowSelection(spuImage, true);
+					this.$message.warning("默认图片不能被取消勾选");
+					return;
+				}
 			});
 			this.imageList = params;
 		},
