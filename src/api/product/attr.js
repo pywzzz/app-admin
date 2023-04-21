@@ -33,3 +33,7 @@ export const reqDeleteAttr = (attrNameId) =>
 		url: `/admin/product/deleteAttrInfo/${attrNameId}`,
 		method: "put",
 	});
+
+//获取平台属性下的所有sku
+export const reqSkuList = (attrId) =>
+	request({ url: `/admin/product/skuInAttr/${attrId}`, method: "get" });

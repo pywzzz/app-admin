@@ -45,8 +45,9 @@
 							></el-button>
 							<!-- 删除按钮 -->
 							<el-popconfirm
-								title="确定删除吗（需要先删除拥有此属性的sku）？"
-								@onConfirm="deleteAttr(row)"
+								:title="`${popconfirmText}`"
+								:confirmButtonText="buttonTitle"
+								@onConfirm="skuList.length === 0 ? deleteAttr(row) : viewSku()"
 							>
 								<el-button
 									type="danger"
@@ -54,6 +55,7 @@
 									icon="el-icon-delete"
 									slot="reference"
 									style="margin-left: 10px"
+									@click="getSkusInAttr(row.id)"
 								></el-button>
 							</el-popconfirm>
 						</template>
@@ -135,6 +137,47 @@
 				<el-button @click="isShowTable = true">取消</el-button>
 			</div>
 		</el-card>
+		<el-dialog
+			title="sku列表"
+			:visible.sync="dialogTableVisible"
+			:before-close="close"
+		>
+			<el-table :data="skuList" style="width: 100%" border v-loading="loading">
+				<el-table-column prop="skuName" label="sku名称" width="100px">
+				</el-table-column>
+				<el-table-column prop="skuDesc" label="描述" width="width">
+				</el-table-column>
+				<el-table-column label="平台属性" width="width">
+					<template v-slot="scope">
+						<el-tag
+							type="success"
+							v-for="attr in scope.row.skuAttrValueList"
+							:key="attr.id"
+							style="margin-right: 10px"
+						>
+							{{ attr.attrName }}：{{ attr.valueName }}
+						</el-tag>
+					</template>
+				</el-table-column>
+				<el-table-column label="操作" width="80px">
+					<template v-slot="scope">
+						<el-popconfirm
+							title="确定删除吗？"
+							@onConfirm="deleteSku(scope.row)"
+						>
+							<!-- 按钮 -->
+							<el-button
+								type="danger"
+								size="mini"
+								icon="el-icon-delete"
+								slot="reference"
+								style="margin-left: 10px"
+							></el-button>
+						</el-popconfirm>
+					</template>
+				</el-table-column>
+			</el-table>
+		</el-dialog>
 	</div>
 </template>
 
@@ -164,6 +207,14 @@ export default {
 				//区分是几级列表的id
 				categoryLevel: 3,
 			},
+			// 用来存储用到这个平台属性的所有sku
+			skuList: [],
+			dialogTableVisible: false,
+			loading: true,
+			buttonTitle: "",
+			popconfirmText: "",
+			// 暂时存放attrId（删除）
+			tempAttrId: 0,
 		};
 	},
 	methods: {
@@ -309,11 +360,53 @@ export default {
 			}
 		},
 		async deleteAttr(row) {
-			let result = await this.$API.attr.reqDeleteAttr(row.id);
-			if (result.code == 200) {
-				this.$message({ type: "success", message: "删除成功" });
-				this.getAttrList();
+			if (this.attrList && this.attrList.length > 1) {
+				let result = await this.$API.attr.reqDeleteAttr(row.id);
+				if (result.code == 200) {
+					this.$message({ type: "success", message: "删除成功" });
+					this.getAttrList();
+				}
+			} else {
+				this.$message({
+					type: "warning",
+					message: "删除失败（平台属性需至少存在一个）",
+				});
 			}
+		},
+		async getSkusInAttr(attrId) {
+			this.tempAttrId = attrId;
+			let result = await this.$API.attr.reqSkuList(attrId);
+			if (result.code == 200) {
+				this.skuList = result.data;
+				if (this.skuList && this.skuList.length > 0) {
+					this.buttonTitle = "查看";
+					this.popconfirmText = "有sku在使用此属性";
+				} else {
+					this.buttonTitle = "删除";
+					this.popconfirmText = "确认删除吗？";
+				}
+			}
+		},
+		async deleteSku(row) {
+			let result = await this.$API.sku.reqDeleteSku(row.id);
+			if (result.code == 200) {
+				this.getSkusInAttr(this.tempAttrId);
+				this.$message({ type: "success", message: "删除成功" });
+			}
+		},
+		viewSku() {
+			// 点击后显示对话框
+			this.dialogTableVisible = true;
+			this.loading = false;
+		},
+		// 关闭对话框时执这个
+		close(done) {
+			// 让loading属性再次变为真
+			this.loading = true;
+			// 清除spu列表的数据
+			this.skuList = [];
+			// 关闭对话框
+			done();
 		},
 	},
 };
