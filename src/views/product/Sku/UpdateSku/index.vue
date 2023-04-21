@@ -306,6 +306,7 @@ export default {
 				this.$message({ type: "success", message: "保存成功" });
 				// 添加成功后切一下scene
 				this.$emit("changeScene", 0);
+				this.$parent.getSkuList();
 			}
 		},
 	},
