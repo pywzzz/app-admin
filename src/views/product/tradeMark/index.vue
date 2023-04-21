@@ -313,10 +313,18 @@ export default {
 							type: "success",
 							message: "删除成功!",
 						});
-						// 如果是本页的数据个数大于1，则停留在当前页，否则停在前一页
-						this.handleCurrentChange(
-							this.list.lenght > 1 ? this.page : this.page - 1
-						);
+						// 如果是本页的数据个数大于1，则停留在当前页，否则停在前一页（期间注意不能让page减成0了）
+						let page = 0;
+						if (this.list.lenght > 1) {
+							page = this.page;
+						} else {
+							if (page > 1) {
+								page = this.page - 1;
+							} else {
+								page = 1;
+							}
+						}
+						this.handleCurrentChange(page);
 						// 弄完后重新获取数据以供展示
 						this.getPageList();
 					})

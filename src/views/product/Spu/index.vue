@@ -212,8 +212,18 @@ export default {
 			let result = await this.$API.spu.reqDeleteSpu(row.id);
 			if (result.code == 200) {
 				this.$message({ type: "success", message: "删除成功" });
-				// 代表SPU个数大于1，则删除后停留在当前页，如果SPU个数小于1，则删除后回到上一页
-				this.getSpuList(this.records.length > 1 ? this.page : this.page - 1);
+				// 代表SPU个数大于1，则删除后停留在当前页，如果SPU个数小于1，则删除后回到上一页（期间注意不能让page减成0了）
+				let page = 0;
+				if (this.records.length > 1) {
+					page = this.page;
+				} else {
+					if (page > 1) {
+						page = this.page - 1;
+					} else {
+						page = 1;
+					}
+				}
+				this.getSpuList(page);
 			}
 		},
 		addSku(row) {
