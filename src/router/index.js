@@ -30,6 +30,7 @@ import Layout from "@/layout";
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+// 这个是常量路由，任何权限的用户都能访问这些页面
 export const constantRoutes = [
 	{
 		path: "/login",
@@ -57,7 +58,10 @@ export const constantRoutes = [
 			},
 		],
 	},
+];
 
+// 这个是异步路由，访问这其中的页面需要相应的权限
+export const asyncRoutes = [
 	{
 		path: "/product",
 		component: Layout,
@@ -91,9 +95,48 @@ export const constantRoutes = [
 		],
 	},
 
-	// 404 page must be placed at the end !!!
-	{ path: "*", redirect: "/404", hidden: true },
+	{
+		name: "Acl",
+		path: "/acl",
+		component: Layout,
+		redirect: "/acl/user/list",
+		meta: {
+			title: "权限管理",
+			icon: "el-icon-lock",
+		},
+		children: [
+			{
+				name: "User",
+				path: "user/list",
+				component: () => import("@/views/acl/user/list"),
+				meta: {
+					title: "用户管理",
+				},
+			},
+			{
+				name: "Role",
+				path: "role/list",
+				component: () => import("@/views/acl/role/list"),
+				meta: {
+					title: "角色管理",
+				},
+			},
+			{
+				name: "RoleAuth",
+				path: "role/auth/:id",
+				component: () => import("@/views/acl/role/roleAuth"),
+				meta: {
+					activeMenu: "/acl/role/list",
+					title: "角色授权",
+				},
+				hidden: true,
+			},
+		],
+	},
 ];
+
+// 这个是任意路由，用于在路径出现错误时，重定向到404页面
+export const anyRoutes = { path: "*", redirect: "/404", hidden: true };
 
 const createRouter = () =>
 	new Router({

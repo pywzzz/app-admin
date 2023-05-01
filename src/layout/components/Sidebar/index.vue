@@ -34,7 +34,8 @@ export default {
 	computed: {
 		...mapGetters(["sidebar"]),
 		routes() {
-			return this.$router.options.routes;
+			// 遍历的路由应该是在store中计算好的resultAllRoutes
+			return this.$store.state.user.resultAllRoutes;
 		},
 		activeMenu() {
 			const route = this.$route;
