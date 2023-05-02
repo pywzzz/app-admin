@@ -2,6 +2,8 @@ import { login, logout, getInfo } from "@/api/user";
 import { getToken, setToken, removeToken } from "@/utils/auth";
 import { resetRouter, constantRoutes, anyRoutes, asyncRoutes } from "@/router";
 import router from "@/router";
+// 按需引入lodash中的深拷贝函数cloneDeep
+import cloneDeep from "lodash/cloneDeep";
 
 const getDefaultState = () => {
 	return {
@@ -111,9 +113,10 @@ const actions = {
 					}
 					// 存储用户的全部信息
 					commit("SET_USERINFO", data);
+					// 需要深拷贝一下，不然对比后数据影响原数据
 					commit(
 						"SET_RESULTASYNCROUTES",
-						computedAsyncRoutes(asyncRoutes, data.routes)
+						computedAsyncRoutes(cloneDeep(asyncRoutes), data.routes)
 					);
 					resolve(data);
 				})

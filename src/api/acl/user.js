@@ -2,11 +2,6 @@ import request from "@/utils/request";
 
 const api_name = "/admin/acl/user";
 
-// 获取当前用户的菜单权限列表
-export function getMenu() {
-	return request("/admin/acl/index/menu");
-}
-
 // 获取后台用户分页列表（带搜索）
 export function getPageList(page, limit, searchObj) {
 	return request({
