@@ -14,14 +14,6 @@ export default {
 		});
 	},
 
-	//   获取某个角色
-	getById(id) {
-		return request({
-			url: `${api_name}/get/${id}`,
-			method: "get",
-		});
-	},
-
 	//   保存一个新角色
 	save(role) {
 		return request({
@@ -37,14 +29,6 @@ export default {
 			url: `${api_name}/update`,
 			method: "put",
 			data: role,
-		});
-	},
-
-	//   获取一个角色的所有权限列表
-	getAssign(roleId) {
-		return request({
-			url: `${api_name}/toAssign/${roleId}`,
-			method: "get",
 		});
 	},
 

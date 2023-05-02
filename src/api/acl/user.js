@@ -11,14 +11,6 @@ export function getPageList(page, limit, searchObj) {
 	});
 }
 
-// 根据ID获取某个后台用户
-export function getById(id) {
-	return request({
-		url: `${api_name}/get/${id}`,
-		method: "get",
-	});
-}
-
 // 保存一个新的后台用户
 export function add(user) {
 	return request({
