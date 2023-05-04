@@ -36,7 +36,7 @@ export default {
 	removeById(id) {
 		return request({
 			url: `${api_name}/remove/${id}`,
-			method: "delete",
+			method: "put",
 		});
 	},
 
@@ -44,7 +44,7 @@ export default {
 	removeRoles(ids) {
 		return request({
 			url: `${api_name}/batchRemove`,
-			method: "delete",
+			method: "put",
 			data: ids,
 		});
 	},

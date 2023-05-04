@@ -33,7 +33,7 @@ const mutations = {
 	// 存储用户信息
 	SET_USERINFO: (state, userInfo) => {
 		// 用户名
-		state.name = userInfo.name;
+		state.name = userInfo.username;
 		// 用户头像
 		state.avatar = userInfo.avatar;
 		// 菜单权限标记
@@ -50,6 +50,8 @@ const mutations = {
 			state.resultAsyncRoutes,
 			anyRoutes
 		);
+		// 这个可以避免控制台弹警告
+		resetRouter();
 		// 给路由器添加新的路由
 		router.addRoutes(state.resultAllRoutes);
 	},

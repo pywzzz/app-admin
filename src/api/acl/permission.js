@@ -3,6 +3,14 @@ import request from "@/utils/request";
 const api_name = "/admin/acl/permission";
 
 export default {
+	// 获取权限列表
+	getPermissionList() {
+		return request({
+			url: `${api_name}/getPermissionList`,
+			method: "get",
+		});
+	},
+
 	//   查看某个角色的权限列表
 	toAssign(roleId) {
 		return request({
