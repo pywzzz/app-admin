@@ -3,7 +3,10 @@
 		<el-form inline>
 			<!-- 表单元素 -->
 			<el-form-item>
-				<el-input v-model="tempSearchObj.username" placeholder="用户名" />
+				<el-input
+					v-model="tempSearchObj.username"
+					placeholder="请输入昵称进行查询"
+				/>
 			</el-form-item>
 			<!-- 查询与情况的按钮 -->
 			<el-button type="primary" icon="el-icon-search" @click="search"
@@ -35,12 +38,9 @@
 
 			<el-table-column type="index" label="序号" width="80" align="center" />
 
-			<el-table-column prop="username" label="用户名" width="150" />
-			<el-table-column prop="nickName" label="用户昵称" />
-			<el-table-column prop="roleName" label="权限列表" />
-
-			<el-table-column prop="gmtCreate" label="创建时间" width="180" />
-			<el-table-column prop="gmtModified" label="更新时间" width="180" />
+			<el-table-column prop="account" label="账号" width="150" />
+			<el-table-column prop="username" label="昵称" />
+			<el-table-column prop="roles" label="角色" :formatter="formatRoles" />
 
 			<el-table-column label="操作" width="230" align="center">
 				<template slot-scope="{ row }">
@@ -79,7 +79,7 @@
 			:current-page="page"
 			:total="total"
 			:page-size="limit"
-			:page-sizes="[3, 10, 20, 30, 40, 50, 100]"
+			:page-sizes="[5, 10, 20]"
 			style="padding: 20px 0"
 			layout="prev, pager, next, jumper, ->, sizes, total"
 			@current-change="getUsers"
@@ -96,14 +96,14 @@
 				:rules="userRules"
 				label-width="120px"
 			>
-				<el-form-item label="用户名" prop="username">
+				<el-form-item label="账号" prop="account">
+					<el-input v-model="user.account" />
+				</el-form-item>
+				<el-form-item label="昵称">
 					<el-input v-model="user.username" />
 				</el-form-item>
-				<el-form-item label="用户昵称">
-					<el-input v-model="user.nickName" />
-				</el-form-item>
 
-				<el-form-item v-if="!user.id" label="用户密码" prop="password">
+				<el-form-item v-if="!user.id" label="密码" prop="password">
 					<el-input v-model="user.password" />
 				</el-form-item>
 			</el-form>
@@ -177,13 +177,13 @@ export default {
 			selectedIds: [], // 所有选择的user的id的数组
 			users: [], // 当前页的用户列表
 			page: 1, // 当前页码
-			limit: 3, // 每页数量
+			limit: 5, // 每页数量
 			total: 0, // 总数量
 			user: {}, // 当前要操作的user
 			dialogUserVisible: false, // 是否显示用户添加/修改的dialog
 			userRules: {
 				// 用户添加/修改表单的校验规则
-				username: [
+				account: [
 					{ required: true, message: "用户名必须输入" },
 					{ min: 4, message: "用户名不能小于4位" },
 				],
@@ -204,6 +204,15 @@ export default {
 	},
 
 	methods: {
+		formatRoles(row, column, cellValue) {
+			// 检查 cellValue 是否为 null 或 undefined，如果是，则返回一个空字符串
+			if (!cellValue) {
+				return "";
+			}
+			// 使用数组的 join() 方法将数组元素连接成一个字符串，元素之间用逗号分隔
+			return cellValue.join("，");
+		},
+
 		/* 
     显示指定角色的界面
     */
@@ -370,7 +379,7 @@ export default {
 			const result = await this.$API.user.getPageList(page, limit, searchObj);
 			this.listLoading = false;
 			const { items, total } = result.data;
-			this.users = items.filter((item) => item.username !== "admin");
+			this.users = items.filter((item) => item.account !== "admin");
 			this.total = total - 1;
 			this.selectedIds = [];
 		},

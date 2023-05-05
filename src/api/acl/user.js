@@ -53,7 +53,7 @@ export function assignRoles(userId, roleId) {
 export function removeById(id) {
 	return request({
 		url: `${api_name}/remove/${id}`,
-		method: "delete",
+		method: "put",
 	});
 }
 
@@ -61,7 +61,7 @@ export function removeById(id) {
 export function removeUsers(ids) {
 	return request({
 		url: `${api_name}/batchRemove`,
-		method: "delete",
+		method: "put",
 		data: ids,
 	});
 }
