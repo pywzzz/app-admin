@@ -11,18 +11,18 @@
 				></el-table-column>
 				<el-table-column
 					prop="skuName"
-					label="名称"
+					label="SKU名称"
 					width="120"
 				></el-table-column>
 				<el-table-column
 					prop="spuName"
-					label="所属的spu"
+					label="所属的SPU"
 					width="120"
 				></el-table-column>
 				<el-table-column
 					prop="tmName"
-					label="spu所属的品牌"
-					width="120"
+					label="SPU所属的品牌"
+					width="150"
 				></el-table-column>
 				<el-table-column
 					prop="skuDesc"

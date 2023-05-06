@@ -66,6 +66,7 @@ export const asyncRoutes = [
 		path: "/product",
 		component: Layout,
 		name: "Product",
+		redirect: "/product/trademark",
 		meta: { title: "商品管理", icon: "el-icon-goods" },
 		children: [
 			{
@@ -84,13 +85,13 @@ export const asyncRoutes = [
 				path: "spu",
 				name: "Spu",
 				component: () => import("@/views/product/Spu"),
-				meta: { title: "Spu管理" },
+				meta: { title: "SPU管理" },
 			},
 			{
 				path: "sku",
 				name: "Sku",
 				component: () => import("@/views/product/Sku"),
-				meta: { title: "Sku管理" },
+				meta: { title: "SKU管理" },
 			},
 		],
 	},
