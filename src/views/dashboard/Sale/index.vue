@@ -8,10 +8,10 @@
 			</el-tabs>
 			<!-- 上方右侧 -->
 			<div class="right">
-				<span @click="setDay">今日</span>
-				<span @click="setWeek">本周</span>
-				<span @click="setMonth">本月</span>
-				<span @click="setYear">本年</span>
+				<span @click="setDay" style="cursor: pointer">今日</span>
+				<span @click="setWeek" style="cursor: pointer">本周</span>
+				<span @click="setMonth" style="cursor: pointer">本月</span>
+				<span @click="setYear" style="cursor: pointer">本年</span>
 				<!-- 日历 -->
 				<el-date-picker
 					v-model="calendarDate"
@@ -37,38 +37,38 @@
 					<h3>门店{{ title }}排名</h3>
 					<ul>
 						<li>
-							<span class="rindex">0</span>
-							<span>肯德基</span>
+							<span class="rindex">1</span>
+							<span>门店1</span>
 							<span class="rvalue">123456</span>
 						</li>
 						<li>
-							<span class="rindex">1</span>
-							<span>肯德基</span>
+							<span class="rindex">2</span>
+							<span>门店2</span>
 							<span class="rvalue">123456</span>
 						</li>
 						<li>
 							<span class="rindex">3</span>
-							<span>肯德基</span>
+							<span>门店3</span>
 							<span class="rvalue">123456</span>
 						</li>
 						<li>
-							<span>4</span>
-							<span>肯德基</span>
+							<span class="rindex">4</span>
+							<span>门店4</span>
 							<span class="rvalue">123456</span>
 						</li>
 						<li>
-							<span>5</span>
-							<span>肯德基</span>
+							<span class="rindex">5</span>
+							<span>门店5</span>
 							<span class="rvalue">123456</span>
 						</li>
 						<li>
-							<span>6</span>
-							<span>肯德基</span>
+							<span class="rindex">6</span>
+							<span>门店6</span>
 							<span class="rvalue">123456</span>
 						</li>
 						<li>
-							<span>7</span>
-							<span>肯德基</span>
+							<span class="rindex">7</span>
+							<span>门店7</span>
 							<span class="rvalue">123456</span>
 						</li>
 					</ul>
