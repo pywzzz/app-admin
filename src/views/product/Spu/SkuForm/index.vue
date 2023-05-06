@@ -145,7 +145,7 @@ export default {
 			this.skuInfo.tmId = spu.tmId;
 			this.spu = spu;
 			// 获取图片的数据
-			let result0 = await this.$API.spu.reqSpuImageLIst(spu.id);
+			let result0 = await this.$API.spu.reqSpuImageList(spu.id);
 			if (result0.code == 200) {
 				let list = result0.data;
 				list.forEach((item) => {
