@@ -129,6 +129,7 @@
 // 引入子组件
 import SpuForm from "./SpuForm";
 import SkuForm from "./SkuForm";
+import { MessageBox } from "element-ui";
 export default {
 	name: "Spu",
 	// 注册子组件
@@ -226,9 +227,24 @@ export default {
 				this.getSpuList(page);
 			}
 		},
-		addSku(row) {
-			this.scene = 2;
-			this.$refs.sku.getData(this.category1Id, this.category2Id, row);
+		async addSku(row) {
+			// 获取平台属性的数据
+			let result = await this.$API.spu.reqAttrInfoList(
+				this.category1Id,
+				this.category2Id,
+				row.category3Id
+			);
+			// 如果此分类下有平台属性
+			if (result.code == 200 && result.data.length !== 0) {
+				this.scene = 2;
+				this.$refs.sku.getData(this.category1Id, this.category2Id, row);
+			} else {
+				// 这里应该应该弄个弹窗，来提示用户去为这个分类添加一个平台属性
+				MessageBox.alert("请为该分类添加平台属性后再添加SKU", "提示", {
+					confirmButtonText: "确定",
+					type: "warning",
+				});
+			}
 		},
 		// 这个是SkuForm的取消按钮用的
 		changeScenes(scene) {
