@@ -121,11 +121,11 @@
 			:before-close="resetRoleData"
 		>
 			<el-form label-width="80px">
-				<el-form-item label="用户名">
+				<el-form-item label="账号">
 					<el-input disabled :value="user.account"></el-input>
 				</el-form-item>
 
-				<el-form-item label="角色列表">
+				<el-form-item label="角色">
 					<el-checkbox
 						:indeterminate="isIndeterminate"
 						v-model="checkAll"
@@ -159,11 +159,30 @@
 
 <script>
 import cloneDeep from "lodash/cloneDeep";
+import { validUsername, validPassword } from "@/utils/validate";
 
 export default {
 	name: "AclUserList",
 
 	data() {
+		const validateUsername = (rule, value, callback) => {
+			if (!validUsername(value)) {
+				callback(new Error("账号由大小写字母或数字组成，长度在4到8个字符之间"));
+			} else {
+				callback();
+			}
+		};
+		const validatePassword = (rule, value, callback) => {
+			if (!validPassword(value)) {
+				callback(
+					new Error(
+						"密码由大小写字母、数字或特殊字符组成，长度在8到20个字符之间"
+					)
+				);
+			} else {
+				callback();
+			}
+		};
 		return {
 			listLoading: false, // 是否显示列表加载的提示
 			searchObj: {
@@ -184,10 +203,11 @@ export default {
 			userRules: {
 				// 用户添加/修改表单的校验规则
 				account: [
-					{ required: true, message: "用户名必须输入" },
-					{ min: 4, message: "用户名不能小于4位" },
+					{ required: true, trigger: "blur", validator: validateUsername },
 				],
-				password: [{ required: true, validator: this.validatePassword }],
+				password: [
+					{ required: true, trigger: "blur", validator: validatePassword },
+				],
 			},
 			loading: false, // 是否正在提交请求中
 			dialogRoleVisible: false, // 是否显示角色Dialog
@@ -287,18 +307,6 @@ export default {
 			this.checkAll = false;
 		},
 
-		/* 
-    自定义密码校验
-    */
-		validatePassword(rule, value, callback) {
-			if (!value) {
-				callback("密码必须输入");
-			} else if (!value || value.length < 6) {
-				callback("密码不能小于6位");
-			} else {
-				callback();
-			}
-		},
 		/* 
     根据输入进行搜索
     */

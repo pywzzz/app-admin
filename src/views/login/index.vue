@@ -66,21 +66,25 @@
 </template>
 
 <script>
-import { validUsername } from "@/utils/validate";
+import { validUsername, validPassword } from "@/utils/validate";
 
 export default {
 	name: "Login",
 	data() {
 		const validateUsername = (rule, value, callback) => {
 			if (!validUsername(value)) {
-				callback(new Error("账号由英文或数字组成"));
+				callback(new Error("账号由大小写字母或数字组成，长度在4到8个字符之间"));
 			} else {
 				callback();
 			}
 		};
 		const validatePassword = (rule, value, callback) => {
-			if (value.length < 6) {
-				callback(new Error("密码长度大于6位"));
+			if (!validPassword(value)) {
+				callback(
+					new Error(
+						"密码由大小写字母、数字或特殊字符组成，长度在8到20个字符之间"
+					)
+				);
 			} else {
 				callback();
 			}

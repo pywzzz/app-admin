@@ -13,19 +13,19 @@ const whiteList = ["/login"]; // no redirect whitelist
 // 设置flag，防止非权限路由，页面死循环重定向
 let flag = 0;
 router.beforeEach(async (to, from, next) => {
-	// 在路由跳转前判断是否被添加成功--解决除首页外其他页面浏览器刷新空白问题
-	if (flag === 0 && to.matched.length === 0) {
-		flag++;
-		next({ path: to.path });
-	} else if (flag !== 0 && to.matched.length === 0) {
-		// next({ path: '/' })
-		next(false); // 此处为重点，非home页刷新后阻止跳转则回到了刷新前的页面
-	} else {
-		next();
-	}
-
 	// start progress bar
 	NProgress.start();
+
+		// 在路由跳转前判断是否被添加成功--解决除首页外其他页面浏览器刷新空白问题
+		if (flag === 0 && to.matched.length === 0) {
+			flag++;
+			next({ path: to.path });
+		} else if (flag !== 0 && to.matched.length === 0) {
+			// next({ path: '/' })
+			next(false); // 此处为重点，非home页刷新后阻止跳转则回到了刷新前的页面
+		} else {
+			next();
+		}
 
 	// set page title
 	document.title = getPageTitle(to.meta.title);
