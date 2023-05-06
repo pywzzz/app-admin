@@ -22,7 +22,7 @@
 				<el-input
 					ref="username"
 					v-model="loginForm.username"
-					placeholder="Username"
+					placeholder="账号"
 					name="username"
 					type="text"
 					tabindex="1"
@@ -40,7 +40,7 @@
 					ref="password"
 					v-model="loginForm.password"
 					:type="passwordType"
-					placeholder="Password"
+					placeholder="密码"
 					name="password"
 					tabindex="2"
 					auto-complete="on"
@@ -61,11 +61,6 @@
 				@click.native.prevent="handleLogin"
 				>登录</el-button
 			>
-
-			<div class="tips">
-				<span style="margin-right: 20px">username: admin</span>
-				<span> password: any</span>
-			</div>
 		</el-form>
 	</div>
 </template>
@@ -78,22 +73,22 @@ export default {
 	data() {
 		const validateUsername = (rule, value, callback) => {
 			if (!validUsername(value)) {
-				callback(new Error("Please enter the correct user name"));
+				callback(new Error("账号由英文或数字组成"));
 			} else {
 				callback();
 			}
 		};
 		const validatePassword = (rule, value, callback) => {
 			if (value.length < 6) {
-				callback(new Error("The password can not be less than 6 digits"));
+				callback(new Error("密码长度大于6位"));
 			} else {
 				callback();
 			}
 		};
 		return {
 			loginForm: {
-				username: "admin",
-				password: "111111",
+				username: "",
+				password: "",
 			},
 			loginRules: {
 				username: [
