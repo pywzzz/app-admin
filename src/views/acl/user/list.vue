@@ -417,11 +417,16 @@ export default {
 					const { user } = this;
 					this.loading = true;
 					this.$API.user[user.id ? "update" : "add"](user).then((result) => {
-						this.loading = false;
-						this.$message.success("保存成功!");
-						this.getUsers(user.id ? this.page : 1);
-						this.user = {};
-						this.dialogUserVisible = false;
+						if (result.code === 200) {
+							this.loading = false;
+							this.$message.success("保存成功！");
+							this.getUsers(user.id ? this.page : 1);
+							this.user = {};
+							this.dialogUserVisible = false;
+						} else if (result.code === 201) {
+							this.loading = false;
+							this.$message.error("此账号已被注册，请输入其他账号！");
+						}
 					});
 				}
 			});
