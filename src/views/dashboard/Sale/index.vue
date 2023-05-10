@@ -13,7 +13,12 @@
 					v-model="timeRange"
 					@tab-click="handleTimeRangeChange"
 				>
-					<el-tab-pane label="本日" name="day">
+					<el-tab-pane
+						v-for="tab in tabs"
+						:label="tab.label"
+						:name="tab.name"
+						:key="tab.name"
+					>
 						<!-- 日历 -->
 						<el-date-picker
 							v-model="calendarDate"
@@ -24,51 +29,8 @@
 							end-placeholder="结束日期"
 							size="mini"
 							value-format="yyyy-MM-dd"
-						>
-						</el-date-picker
-					></el-tab-pane>
-					<el-tab-pane label="本周" name="week">
-						<!-- 日历 -->
-						<el-date-picker
-							v-model="calendarDate"
-							class="calendar"
-							type="daterange"
-							range-separator="-"
-							start-placeholder="开始日期"
-							end-placeholder="结束日期"
-							size="mini"
-							value-format="yyyy-MM-dd"
-						>
-						</el-date-picker
-					></el-tab-pane>
-					<el-tab-pane label="本月" name="month">
-						<!-- 日历 -->
-						<el-date-picker
-							v-model="calendarDate"
-							class="calendar"
-							type="daterange"
-							range-separator="-"
-							start-placeholder="开始日期"
-							end-placeholder="结束日期"
-							size="mini"
-							value-format="yyyy-MM-dd"
-						>
-						</el-date-picker
-					></el-tab-pane>
-					<el-tab-pane label="本年" name="year">
-						<!-- 日历 -->
-						<el-date-picker
-							v-model="calendarDate"
-							class="calendar"
-							type="daterange"
-							range-separator="-"
-							start-placeholder="开始日期"
-							end-placeholder="结束日期"
-							size="mini"
-							value-format="yyyy-MM-dd"
-						>
-						</el-date-picker
-					></el-tab-pane>
+						></el-date-picker>
+					</el-tab-pane>
 				</el-tabs>
 			</div>
 		</div>
@@ -186,6 +148,13 @@ export default {
 			isLoading: false,
 			timeRange: "day",
 			listData: [],
+			tabs: [
+				{ label: "本日", name: "day" },
+				{ label: "本周", name: "week" },
+				{ label: "本月", name: "month" },
+				{ label: "本年", name: "year" },
+				{ label: "其他", name: "others" },
+			],
 		};
 	},
 	computed: {
@@ -204,10 +173,36 @@ export default {
 				? this.getSaleRankData()
 				: this.getVisitRankData();
 		},
-		calendarDate() {
+		calendarDate(newVal) {
 			this.activeName == "sale"
 				? this.getSaleRankData()
 				: this.getVisitRankData();
+
+			if (newVal == null || newVal == undefined) {
+				this.timeRange = "others";
+			} else if (
+				newVal[0] == dayjs().format("YYYY-MM-DD") &&
+				newVal[1] == dayjs().format("YYYY-MM-DD")
+			) {
+				this.timeRange = "day";
+			} else if (
+				newVal[0] == dayjs().day(1).format("YYYY-MM-DD") &&
+				newVal[1] == dayjs().day(7).format("YYYY-MM-DD")
+			) {
+				this.timeRange = "week";
+			} else if (
+				newVal[0] == dayjs().startOf("month").format("YYYY-MM-DD") &&
+				newVal[1] == dayjs().endOf("month").format("YYYY-MM-DD")
+			) {
+				this.timeRange = "month";
+			} else if (
+				newVal[0] == dayjs().startOf("year").format("YYYY-MM-DD") &&
+				newVal[1] == dayjs().endOf("year").format("YYYY-MM-DD")
+			) {
+				this.timeRange = "year";
+			} else {
+				this.timeRange = "others";
+			}
 		},
 	},
 	methods: {
