@@ -13,11 +13,7 @@
 					v-model="timeRange"
 					@tab-click="handleTimeRangeChange"
 				>
-					<el-tab-pane label="今日" name="day"></el-tab-pane>
-					<el-tab-pane label="本周" name="week"></el-tab-pane>
-					<el-tab-pane label="本月" name="month"></el-tab-pane>
-					<el-tab-pane label="本年" name="year"></el-tab-pane>
-					<el-tab-pane label="日期选择" name="datePickerTab">
+					<el-tab-pane label="本日" name="day">
 						<!-- 日历 -->
 						<el-date-picker
 							v-model="calendarDate"
@@ -29,8 +25,50 @@
 							size="mini"
 							value-format="yyyy-MM-dd"
 						>
-						</el-date-picker>
-					</el-tab-pane>
+						</el-date-picker
+					></el-tab-pane>
+					<el-tab-pane label="本周" name="week">
+						<!-- 日历 -->
+						<el-date-picker
+							v-model="calendarDate"
+							class="calendar"
+							type="daterange"
+							range-separator="-"
+							start-placeholder="开始日期"
+							end-placeholder="结束日期"
+							size="mini"
+							value-format="yyyy-MM-dd"
+						>
+						</el-date-picker
+					></el-tab-pane>
+					<el-tab-pane label="本月" name="month">
+						<!-- 日历 -->
+						<el-date-picker
+							v-model="calendarDate"
+							class="calendar"
+							type="daterange"
+							range-separator="-"
+							start-placeholder="开始日期"
+							end-placeholder="结束日期"
+							size="mini"
+							value-format="yyyy-MM-dd"
+						>
+						</el-date-picker
+					></el-tab-pane>
+					<el-tab-pane label="本年" name="year">
+						<!-- 日历 -->
+						<el-date-picker
+							v-model="calendarDate"
+							class="calendar"
+							type="daterange"
+							range-separator="-"
+							start-placeholder="开始日期"
+							end-placeholder="结束日期"
+							size="mini"
+							value-format="yyyy-MM-dd"
+						>
+						</el-date-picker
+					></el-tab-pane>
 				</el-tabs>
 			</div>
 		</div>
@@ -42,7 +80,7 @@
 					<div class="charts" ref="charts"></div>
 				</el-col>
 				<el-col :span="6" class="right">
-					<h3>门店{{ title }}排名</h3>
+					<h3>品牌{{ title }}排名</h3>
 					<div class="container">
 						<div v-if="listData.length === 0" class="center">No Data</div>
 						<ul v-else>
