@@ -3,7 +3,7 @@ import { reqSaleRank, reqVisitRank } from "@/api/dashboard/home";
 // 仓库存数据的地方
 const state = {
 	barChartsData: {
-		barChartsSaleData: [12, 35, 26, 23, 18, 34, 34, 95, 37, 68, 46, 99],
+		barChartsSaleData: [],
 		barChartsVisitData: [52, 25, 86, 3, 78, 34, 34, 95, 37, 8, 16, 39],
 	},
 	rankData: {
@@ -18,6 +18,12 @@ const mutations = {
 	},
 	GETVISITRANKDATA(state, finalVisitRankData) {
 		state.rankData.visitRank = finalVisitRankData;
+	},
+	GETSALEBARCHARTSDATA(state, data) {
+		state.barChartsData.barChartsSaleData = data;
+	},
+	GETVISITBARCHARTSDATA(state, data) {
+		state.barChartsData.barChartsVisitData = data;
 	},
 };
 // 书写业务逻辑，处理异步云
@@ -57,6 +63,62 @@ const actions = {
 		} else {
 			return Promise.reject(new Error("fail"));
 		}
+	},
+	async getSaleBarChartsData({ commit }) {
+		let result = [];
+		let months = [
+			["2023-01-01", "2023-01-31"],
+			["2023-02-01", "2023-02-28"],
+			["2023-03-01", "2023-03-31"],
+			["2023-04-01", "2023-04-30"],
+			["2023-05-01", "2023-05-31"],
+			["2023-06-01", "2023-06-30"],
+			["2023-07-01", "2023-07-31"],
+			["2023-08-01", "2023-08-31"],
+			["2023-09-01", "2023-09-30"],
+			["2023-10-01", "2023-10-31"],
+			["2023-11-01", "2023-11-30"],
+			["2023-12-01", "2023-12-31"],
+		];
+		// 对每个月份进行循环处理
+		for (let month of months) {
+			let res = await reqSaleRank(month);
+			if (res.code == 200) {
+				let sum = res.data.reduce((total, item) => total + item.sales, 0);
+				result.push(sum);
+			} else {
+				return Promise.reject(new Error("fail"));
+			}
+		}
+		commit("GETSALEBARCHARTSDATA", result);
+	},
+	async getVisitBarChartsData({ commit }) {
+		let result = [];
+		let months = [
+			["2023-01-01", "2023-01-31"],
+			["2023-02-01", "2023-02-28"],
+			["2023-03-01", "2023-03-31"],
+			["2023-04-01", "2023-04-30"],
+			["2023-05-01", "2023-05-31"],
+			["2023-06-01", "2023-06-30"],
+			["2023-07-01", "2023-07-31"],
+			["2023-08-01", "2023-08-31"],
+			["2023-09-01", "2023-09-30"],
+			["2023-10-01", "2023-10-31"],
+			["2023-11-01", "2023-11-30"],
+			["2023-12-01", "2023-12-31"],
+		];
+		// 对每个月份进行循环处理
+		for (let month of months) {
+			let res = await reqVisitRank(month);
+			if (res.code == 200) {
+				let sum = res.data.reduce((total, item) => total + item.visits, 0);
+				result.push(sum);
+			} else {
+				return Promise.reject(new Error("fail"));
+			}
+		}
+		commit("GETVISITBARCHARTSDATA", result);
 	},
 };
 // 功能类似计算属性，用于少些写东西

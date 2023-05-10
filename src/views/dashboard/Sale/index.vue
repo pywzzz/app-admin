@@ -81,6 +81,8 @@ export default {
 		this.setDay();
 		this.getSaleRankData();
 		this.getVisitRankData();
+		this.getSaleBarChartsData();
+		this.getVisitBarChartsData();
 		// 初始化echarts实例
 		this.barCharts = echarts.init(this.$refs.charts);
 		// 配置数据
@@ -204,6 +206,12 @@ export default {
 				this.timeRange = "others";
 			}
 		},
+		barChartsData: {
+			deep: true,
+			handler() {
+				this.updateChartsData();
+			},
+		},
 	},
 	methods: {
 		async getSaleRankData() {
@@ -217,6 +225,12 @@ export default {
 			await this.$store.dispatch("getVisitRankData", this.calendarDate);
 			this.listData = this.rankData.visitRank;
 			this.isLoading = false;
+		},
+		async getSaleBarChartsData() {
+			await this.$store.dispatch("getSaleBarChartsData");
+		},
+		async getVisitBarChartsData() {
+			await this.$store.dispatch("getVisitBarChartsData");
 		},
 		handleTimeRangeChange(tab) {
 			switch (tab.name) {
@@ -269,7 +283,7 @@ export default {
 						type: "bar",
 						barWidth: "60%",
 						data:
-							this.title == "销售额"
+							this.activeName == "sale"
 								? this.barChartsData.barChartsSaleData
 								: this.barChartsData.barChartsVisitData,
 						color: "blue",
