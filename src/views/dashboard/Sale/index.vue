@@ -13,14 +13,10 @@
 					v-model="timeRange"
 					@tab-click="handleTimeRangeChange"
 				>
-					<el-tab-pane label="今日" name="day" @click="setDay"></el-tab-pane>
-					<el-tab-pane label="本周" name="week" @click="setWeek"></el-tab-pane>
-					<el-tab-pane
-						label="本月"
-						name="month"
-						@click="setMonth"
-					></el-tab-pane>
-					<el-tab-pane label="本年" name="year" @click="setYear"></el-tab-pane>
+					<el-tab-pane label="今日" name="day"></el-tab-pane>
+					<el-tab-pane label="本周" name="week"></el-tab-pane>
+					<el-tab-pane label="本月" name="month"></el-tab-pane>
+					<el-tab-pane label="本年" name="year"></el-tab-pane>
 					<el-tab-pane label="日期选择" name="datePickerTab">
 						<!-- 日历 -->
 						<el-date-picker
