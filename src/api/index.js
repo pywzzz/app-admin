@@ -5,6 +5,7 @@ import * as spu from "./product/spu";
 import * as user from "./acl/user";
 import role from "./acl/role";
 import permission from "./acl/permission";
+import * as home from "./dashboard/home";
 
 export default {
 	trademark,
@@ -14,4 +15,5 @@ export default {
 	user,
 	role,
 	permission,
+	home,
 };

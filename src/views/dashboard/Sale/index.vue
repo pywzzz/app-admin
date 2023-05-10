@@ -8,22 +8,34 @@
 			</el-tabs>
 			<!-- 上方右侧 -->
 			<div class="right">
-				<span @click="setDay" style="cursor: pointer">今日</span>
-				<span @click="setWeek" style="cursor: pointer">本周</span>
-				<span @click="setMonth" style="cursor: pointer">本月</span>
-				<span @click="setYear" style="cursor: pointer">本年</span>
-				<!-- 日历 -->
-				<el-date-picker
-					v-model="calendarDate"
-					class="calendar"
-					type="daterange"
-					range-separator="-"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-					size="mini"
-					value-format="yyyy-MM-dd"
+				<el-tabs
+					class="tab"
+					v-model="timeRange"
+					@tab-click="handleTimeRangeChange"
 				>
-				</el-date-picker>
+					<el-tab-pane label="今日" name="day" @click="setDay"></el-tab-pane>
+					<el-tab-pane label="本周" name="week" @click="setWeek"></el-tab-pane>
+					<el-tab-pane
+						label="本月"
+						name="month"
+						@click="setMonth"
+					></el-tab-pane>
+					<el-tab-pane label="本年" name="year" @click="setYear"></el-tab-pane>
+					<el-tab-pane label="日期选择" name="datePickerTab">
+						<!-- 日历 -->
+						<el-date-picker
+							v-model="calendarDate"
+							class="calendar"
+							type="daterange"
+							range-separator="-"
+							start-placeholder="开始日期"
+							end-placeholder="结束日期"
+							size="mini"
+							value-format="yyyy-MM-dd"
+						>
+						</el-date-picker>
+					</el-tab-pane>
+				</el-tabs>
 			</div>
 		</div>
 		<!-- 下半部分 -->
@@ -35,43 +47,28 @@
 				</el-col>
 				<el-col :span="6" class="right">
 					<h3>门店{{ title }}排名</h3>
-					<ul>
-						<li>
-							<span class="rindex">1</span>
-							<span>门店1</span>
-							<span class="rvalue">123456</span>
-						</li>
-						<li>
-							<span class="rindex">2</span>
-							<span>门店2</span>
-							<span class="rvalue">123456</span>
-						</li>
-						<li>
-							<span class="rindex">3</span>
-							<span>门店3</span>
-							<span class="rvalue">123456</span>
-						</li>
-						<li>
-							<span class="rindex">4</span>
-							<span>门店4</span>
-							<span class="rvalue">123456</span>
-						</li>
-						<li>
-							<span class="rindex">5</span>
-							<span>门店5</span>
-							<span class="rvalue">123456</span>
-						</li>
-						<li>
-							<span class="rindex">6</span>
-							<span>门店6</span>
-							<span class="rvalue">123456</span>
-						</li>
-						<li>
-							<span class="rindex">7</span>
-							<span>门店7</span>
-							<span class="rvalue">123456</span>
-						</li>
-					</ul>
+					<div class="container">
+						<div v-if="listData.length === 0" class="center">No Data</div>
+						<ul v-else>
+							<li v-for="item in listData" :key="item.order">
+								<span class="rindex">{{ item.order }}</span>
+								<span>{{ item.tmName }}</span>
+								<span class="rvalue">
+									{{
+										isLoading
+											? "loading..."
+											: activeName == "sale"
+											? item.sales
+												? "￥" + item.sales
+												: "loading..."
+											: item.visits
+											? item.visits + "次"
+											: "loading..."
+									}}
+								</span>
+							</li>
+						</ul>
+					</div>
 				</el-col>
 			</el-row>
 		</div>
@@ -81,9 +78,13 @@
 <script>
 import echarts from "echarts";
 import dayjs from "dayjs";
+import { mapState } from "vuex";
 export default {
 	name: "",
 	mounted() {
+		this.setDay();
+		this.getSaleRankData();
+		this.getVisitRankData();
 		// 初始化echarts实例
 		this.barCharts = echarts.init(this.$refs.charts);
 		// 配置数据
@@ -136,7 +137,7 @@ export default {
 					name: "Direct",
 					type: "bar",
 					barWidth: "60%",
-					data: [12, 35, 26, 23, 18, 34, 34, 95, 37, 68, 46, 99],
+					data: [],
 					color: "blue",
 				},
 			],
@@ -148,26 +149,66 @@ export default {
 			// 把柱状图挂载在实例上从而在watch中再次设置它的title
 			barCharts: null,
 			calendarDate: [],
+			isLoading: false,
+			timeRange: "day",
+			listData: [],
 		};
 	},
 	computed: {
 		title() {
 			return this.activeName == "sale" ? "销售额" : "访问量";
 		},
+		...mapState({
+			barChartsData: (state) => state.home.barChartsData,
+			rankData: (state) => state.home.rankData,
+		}),
 	},
 	watch: {
 		title() {
-			this.barCharts.setOption({
-				title: {
-					text: this.title + "趋势",
-				},
-			});
+			this.updateChartsData();
+			this.activeName == "sale"
+				? this.getSaleRankData()
+				: this.getVisitRankData();
+		},
+		calendarDate() {
+			this.activeName == "sale"
+				? this.getSaleRankData()
+				: this.getVisitRankData();
 		},
 	},
 	methods: {
+		async getSaleRankData() {
+			this.isLoading = true;
+			await this.$store.dispatch("getSaleRankData", this.calendarDate);
+			this.listData = this.rankData.saleRank;
+			this.isLoading = false;
+		},
+		async getVisitRankData() {
+			this.isLoading = true;
+			await this.$store.dispatch("getVisitRankData", this.calendarDate);
+			this.listData = this.rankData.visitRank;
+			this.isLoading = false;
+		},
+		handleTimeRangeChange(tab) {
+			switch (tab.name) {
+				case "day":
+					this.setDay();
+					break;
+				case "week":
+					this.setWeek();
+					break;
+				case "month":
+					this.setMonth();
+					break;
+				case "year":
+					this.setYear();
+					break;
+				default:
+					break;
+			}
+		},
 		setDay() {
 			const day = dayjs().format("YYYY-MM-DD");
-			console.log(day);
 			this.calendarDate = [day, day];
 		},
 		setWeek() {
@@ -188,6 +229,25 @@ export default {
 			const end = dayjs().endOf("year").format("YYYY-MM-DD");
 			this.calendarDate = [start, end];
 		},
+		updateChartsData() {
+			this.barCharts.setOption({
+				title: {
+					text: this.title + "趋势",
+				},
+				series: [
+					{
+						name: "Direct",
+						type: "bar",
+						barWidth: "60%",
+						data:
+							this.title == "销售额"
+								? this.barChartsData.barChartsSaleData
+								: this.barChartsData.barChartsVisitData,
+						color: "blue",
+					},
+				],
+			});
+		},
 	},
 };
 </script>
@@ -197,6 +257,17 @@ export default {
 	position: relative;
 	display: flex;
 	justify-content: space-between;
+}
+
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+}
+
+.center {
+	text-align: center;
 }
 
 .tab {
