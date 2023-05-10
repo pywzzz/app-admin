@@ -42,7 +42,7 @@
 					<div class="charts" ref="charts"></div>
 				</el-col>
 				<el-col :span="6" class="right">
-					<h3>品牌{{ title }}排名</h3>
+					<h3>品牌{{ rankTitle }}排名</h3>
 					<div class="container">
 						<div v-if="listData.length === 0" class="center">No Data</div>
 						<ul v-else>
@@ -89,7 +89,7 @@ export default {
 		this.barCharts.setOption({
 			// 标题
 			title: {
-				text: this.title + "趋势",
+				text: this.barChartsTitle + "趋势",
 			},
 			tooltip: {
 				trigger: "axis",
@@ -160,8 +160,13 @@ export default {
 		};
 	},
 	computed: {
-		title() {
+		rankTitle() {
 			return this.activeName == "sale" ? "销售额" : "访问量";
+		},
+		barChartsTitle() {
+			return this.activeName == "sale"
+				? `${dayjs().format("YYYY")}年总销售额`
+				: `${dayjs().format("YYYY")}年总访问量`;
 		},
 		...mapState({
 			barChartsData: (state) => state.home.barChartsData,
@@ -169,7 +174,7 @@ export default {
 		}),
 	},
 	watch: {
-		title() {
+		rankTitle() {
 			this.updateChartsData();
 			this.activeName == "sale"
 				? this.getSaleRankData()
@@ -275,7 +280,7 @@ export default {
 		updateChartsData() {
 			this.barCharts.setOption({
 				title: {
-					text: this.title + "趋势",
+					text: this.barChartsTitle + "趋势",
 				},
 				series: [
 					{

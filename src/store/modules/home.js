@@ -1,4 +1,5 @@
 import { reqSaleRank, reqVisitRank } from "@/api/dashboard/home";
+import dayjs from "dayjs";
 
 // 仓库存数据的地方
 const state = {
@@ -66,20 +67,11 @@ const actions = {
 	},
 	async getSaleBarChartsData({ commit }) {
 		let result = [];
-		let months = [
-			["2023-01-01", "2023-01-31"],
-			["2023-02-01", "2023-02-28"],
-			["2023-03-01", "2023-03-31"],
-			["2023-04-01", "2023-04-30"],
-			["2023-05-01", "2023-05-31"],
-			["2023-06-01", "2023-06-30"],
-			["2023-07-01", "2023-07-31"],
-			["2023-08-01", "2023-08-31"],
-			["2023-09-01", "2023-09-30"],
-			["2023-10-01", "2023-10-31"],
-			["2023-11-01", "2023-11-30"],
-			["2023-12-01", "2023-12-31"],
-		];
+		let months = Array.from({ length: 12 }, (_, i) => {
+			const monthStart = dayjs().month(i).startOf("month").format("YYYY-MM-DD");
+			const monthEnd = dayjs().month(i).endOf("month").format("YYYY-MM-DD");
+			return [monthStart, monthEnd];
+		});
 		// 对每个月份进行循环处理
 		for (let month of months) {
 			let res = await reqSaleRank(month);
@@ -94,20 +86,11 @@ const actions = {
 	},
 	async getVisitBarChartsData({ commit }) {
 		let result = [];
-		let months = [
-			["2023-01-01", "2023-01-31"],
-			["2023-02-01", "2023-02-28"],
-			["2023-03-01", "2023-03-31"],
-			["2023-04-01", "2023-04-30"],
-			["2023-05-01", "2023-05-31"],
-			["2023-06-01", "2023-06-30"],
-			["2023-07-01", "2023-07-31"],
-			["2023-08-01", "2023-08-31"],
-			["2023-09-01", "2023-09-30"],
-			["2023-10-01", "2023-10-31"],
-			["2023-11-01", "2023-11-30"],
-			["2023-12-01", "2023-12-31"],
-		];
+		let months = Array.from({ length: 12 }, (_, i) => {
+			const monthStart = dayjs().month(i).startOf("month").format("YYYY-MM-DD");
+			const monthEnd = dayjs().month(i).endOf("month").format("YYYY-MM-DD");
+			return [monthStart, monthEnd];
+		});
 		// 对每个月份进行循环处理
 		for (let month of months) {
 			let res = await reqVisitRank(month);
