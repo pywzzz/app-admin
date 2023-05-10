@@ -24,7 +24,6 @@
 		<el-table
 			border
 			stripe
-			style="width: 960px"
 			v-loading="listLoading"
 			:data="roles"
 			@selection-change="handleSelectionChange"

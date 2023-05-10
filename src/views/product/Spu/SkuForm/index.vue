@@ -25,7 +25,15 @@
 						v-for="attr in attrInfoList"
 						:key="attr.id"
 					>
-						<el-select placeholder="请选择" v-model="attr.attrIdAndValueId">
+						<el-checkbox
+							v-model="attr.checked"
+							style="margin-right: 10px"
+						></el-checkbox>
+						<el-select
+							placeholder="请选择"
+							v-model="attr.attrIdAndValueId"
+							:disabled="!attr.checked"
+						>
 							<el-option
 								:label="attrValue.valueName"
 								:value="`${attr.id}:${attrValue.id}`"
@@ -43,7 +51,15 @@
 						v-for="saleAttr in spuSaleAttrList"
 						:key="saleAttr.id"
 					>
-						<el-select placeholder="请选择" v-model="saleAttr.attrIdAndValueId">
+						<el-checkbox
+							v-model="saleAttr.checked"
+							style="margin-right: 10px"
+						></el-checkbox>
+						<el-select
+							placeholder="请选择"
+							v-model="saleAttr.attrIdAndValueId"
+							:disabled="!saleAttr.checked"
+						>
 							<el-option
 								:label="saleAttrValue.saleAttrValueName"
 								:value="`${saleAttr.id}:${saleAttrValue.id}`"
@@ -118,7 +134,7 @@ export default {
 				tmId: 0,
 				// 这4个是通过v-model收集的数据
 				skuName: "",
-				price: 0,
+				price: "",
 				weight: "",
 				skuDesc: "",
 				// 下面4个数据是用户自己弄的
@@ -208,22 +224,26 @@ export default {
 			// 解构
 			const { attrInfoList, skuInfo, spuSaleAttrList, imageList } = this;
 			// 在发送请求前要先整理参数，从而迎合服务器的所需的数据的格式
-			skuInfo.skuAttrValueList = attrInfoList.reduce((prev, item) => {
-				// 用户在下拉框中选完后，才会有一个叫attrIdAndValueId的字段
-				if (item.attrIdAndValueId) {
-					const [attrId, valueId] = item.attrIdAndValueId.split(":");
-					prev.push({ attrId, valueId });
-				}
-				return prev;
-			}, []);
-			skuInfo.skuSaleAttrValueList = spuSaleAttrList.reduce((prev, item) => {
-				if (item.attrIdAndValueId) {
-					const [saleAttrId, saleAttrValueId] =
-						item.attrIdAndValueId.split(":");
-					prev.push({ saleAttrId, saleAttrValueId });
-				}
-				return prev;
-			}, []);
+			skuInfo.skuAttrValueList = attrInfoList
+				.filter((attr) => attr.checked)
+				.reduce((prev, item) => {
+					// 用户在下拉框中选完后，才会有一个叫attrIdAndValueId的字段
+					if (item.attrIdAndValueId) {
+						const [attrId, valueId] = item.attrIdAndValueId.split(":");
+						prev.push({ attrId, valueId });
+					}
+					return prev;
+				}, []);
+			skuInfo.skuSaleAttrValueList = spuSaleAttrList
+				.filter((saleAttr) => saleAttr.checked)
+				.reduce((prev, item) => {
+					if (item.attrIdAndValueId) {
+						const [saleAttrId, saleAttrValueId] =
+							item.attrIdAndValueId.split(":");
+						prev.push({ saleAttrId, saleAttrValueId });
+					}
+					return prev;
+				}, []);
 			skuInfo.skuImageList = imageList.map((item) => {
 				return {
 					imgName: item.imgName,
@@ -238,6 +258,8 @@ export default {
 				this.$message({ type: "success", message: "添加SKU成功" });
 				// 添加成功后切一下scene
 				this.$emit("changeScenes", 0);
+				// 清除数据
+				Object.assign(this._data, this.$options.data());
 			}
 		},
 	},
