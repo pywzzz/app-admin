@@ -163,7 +163,7 @@ export default {
 			}
 
 			// 获取图片的数据
-			let result0 = await this.$API.spu.reqSpuImageLIst(skuInfo.spuId);
+			let result0 = await this.$API.spu.reqSpuImageList(skuInfo.spuId);
 			if (result0.code == 200) {
 				let list = result0.data;
 				list.forEach((item) => {
