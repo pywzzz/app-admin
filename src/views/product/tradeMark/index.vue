@@ -15,6 +15,7 @@
 			<!-- 利用 type="index" 来自动生成序号 -->
 			<el-table-column
 				type="index"
+				:index="(index) => (page - 1) * limit + index + 1"
 				prop="prop"
 				label="序号"
 				width="80px"

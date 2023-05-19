@@ -20,7 +20,13 @@
 				>
 				<el-table style="width: 100%" border :data="records">
 					<!-- 序号列 -->
-					<el-table-column type="index" label="序号" width="80" align="center">
+					<el-table-column
+						type="index"
+						:index="(index) => (page - 1) * limit + index + 1"
+						label="序号"
+						width="80"
+						align="center"
+					>
 					</el-table-column>
 					<!-- SPU名称列 -->
 					<el-table-column prop="spuName" label="SPU名称" width="width">

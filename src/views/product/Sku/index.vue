@@ -5,6 +5,7 @@
 			<el-table style="width: 100%" border :data="records">
 				<el-table-column
 					type="index"
+					:index="(index) => (page - 1) * limit + index + 1"
 					label="序号"
 					width="80"
 					align="center"

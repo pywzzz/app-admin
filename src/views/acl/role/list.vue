@@ -30,7 +30,13 @@
 		>
 			<el-table-column type="selection" width="55" />
 
-			<el-table-column type="index" label="序号" width="80" align="center">
+			<el-table-column
+				type="index"
+				:index="(index) => (page - 1) * limit + index + 1"
+				label="序号"
+				width="80"
+				align="center"
+			>
 			</el-table-column>
 
 			<el-table-column label="角色名称">
