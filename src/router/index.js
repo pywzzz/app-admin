@@ -82,6 +82,12 @@ export const asyncRoutes = [
 				meta: { title: "平台属性管理" },
 			},
 			{
+				path: "saleattr",
+				name: "SaleAttr",
+				component: () => import("@/views/product/SaleAttr"),
+				meta: { title: "销售属性管理" },
+			},
+			{
 				path: "spu",
 				name: "Spu",
 				component: () => import("@/views/product/Spu"),
