@@ -195,7 +195,7 @@ export default {
 				this.spuImageList = listArr;
 			}
 			// 获取平台全部的销售属性
-			let saleResult = await this.$API.spu.reqBaseSaleAttrList();
+			let saleResult = await this.$API.spu.reqBaseSaleAttrList(this.spu.category3Id);
 			if (saleResult.code == 200) {
 				this.saleAttrList = saleResult.data;
 			}
@@ -290,7 +290,7 @@ export default {
 				this.tradeMarkList = tradeMarkResult.data;
 			}
 			// 获取平台全部的销售属性
-			let saleResult = await this.$API.spu.reqBaseSaleAttrList();
+			let saleResult = await this.$API.spu.reqBaseSaleAttrList(category3Id);
 			if (saleResult.code == 200) {
 				this.saleAttrList = saleResult.data;
 			}

@@ -24,8 +24,11 @@ export const reqSpuImageList = (spuId) =>
 	request({ url: `/admin/product/spuImageList/${spuId}`, method: "get" });
 
 //获取平台全部销售属性----整个平台销售属性一共三个
-export const reqBaseSaleAttrList = () =>
-	request({ url: "/admin/product/baseSaleAttrList", method: "get" });
+export const reqBaseSaleAttrList = (category3Id) =>
+	request({
+		url: `/admin/product/baseSaleAttrList/${category3Id}`,
+		method: "get",
+	});
 
 //修改或添加SPU，这两种操作携带给服务器参数大致一样的，唯一的区别就是携带的参数是否带id
 export const reqAddOrUpdateSpu = (spuInfo) => {
