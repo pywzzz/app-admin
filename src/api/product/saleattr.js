@@ -27,3 +27,7 @@ export const removeById = (id) =>
 		url: `/admin/product/deleteSaleAttrInfo/${id}`,
 		method: "put",
 	});
+
+//获取销售属性下的所有spu
+export const reqSpuList = (saleAttrId) =>
+	request({ url: `/admin/product/spuInSaleAttr/${saleAttrId}`, method: "get" });

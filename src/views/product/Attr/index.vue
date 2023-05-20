@@ -34,7 +34,7 @@
 							>
 						</template>
 					</el-table-column>
-					<el-table-column prop="prop" label="操作" width="150">
+					<el-table-column prop="prop" label="操作" width="300">
 						<template slot-scope="{ row }">
 							<!-- 修改按钮 -->
 							<el-button
@@ -58,6 +58,14 @@
 									@click="getSkusInAttr(row.id)"
 								></el-button>
 							</el-popconfirm>
+							<el-button
+								type="info"
+								size="mini"
+								icon="el-icon-info"
+								title="查看当前使用此平台属性的sku"
+								style="margin-left: 10px"
+								@click="getSkusInAttrButton(row.id)"
+							></el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -386,6 +394,14 @@ export default {
 					this.popconfirmText = "确认删除吗？";
 				}
 			}
+		},
+		async getSkusInAttrButton(attrId) {
+			let result = await this.$API.attr.reqSkuList(attrId);
+			if (result.code == 200) {
+				this.skuList = result.data;
+			}
+			this.dialogTableVisible = true;
+			this.loading = false;
 		},
 		async deleteSku(row) {
 			let result = await this.$API.sku.reqDeleteSku(row.id);

@@ -64,6 +64,13 @@
 						title="删除销售属性"
 						@click="removeSaleAttr(row)"
 					/>
+					<el-button
+						type="info"
+						size="mini"
+						icon="el-icon-info"
+						title="查看当前使用此销售属性的spu"
+						@click="getAllSpuInSaleAttr(row)"
+					></el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -77,6 +84,30 @@
 			@current-change="getSaleAttrs"
 			@size-change="handleSizeChange"
 		/>
+		<el-dialog
+			title="spu列表"
+			:visible.sync="dialogTableVisible"
+			:before-close="close"
+		>
+			<el-table :data="spuList" style="width: 100%" border>
+				<el-table-column prop="spuName" label="spu名称" width="100px">
+				</el-table-column>
+				<el-table-column prop="spuDesc" label="描述" width="width">
+				</el-table-column>
+				<el-table-column label="销售属性名" width="width">
+					<template v-slot="scope">
+						<el-tag
+							type="success"
+							v-for="saleAttr in scope.row.spuSaleAttrNameList"
+							:key="saleAttr.id"
+							style="margin-right: 10px"
+						>
+							{{ saleAttr.saleAttrName }}
+						</el-tag>
+					</template>
+				</el-table-column>
+			</el-table>
+		</el-dialog>
 	</div>
 </template>
 
@@ -90,9 +121,12 @@ export default {
 			category3Id: "",
 			// 销售属性列表
 			saleAttrs: [],
+			// 存储某个销售属性包含的spu
+			spuList: [],
 			total: 0,
 			page: 1,
 			limit: 5,
+			dialogTableVisible: false,
 		};
 	},
 	methods: {
@@ -168,29 +202,62 @@ export default {
 			saleAttr.edit = false;
 		},
 		// 删除指定的销售属性
-		removeSaleAttr({ id, saleAttrName }) {
-			this.$confirm(`确定删除 '${saleAttrName}' 吗?`, "提示", {
-				confirmButtonText: "确定",
-				cancelButtonText: "取消",
-				type: "warning",
-			})
-				.then(async () => {
-					const result = await this.$API.saleattr.removeById(id);
-					this.$message.success(result.message || "删除成功!");
-					// 如果是本页的数据个数大于1，则停留在当前页，否则停在前一页（期间注意不能让page减成0了）
-					let page = 0;
-					if (this.saleAttrs.length > 1) {
-						page = this.page;
-					} else {
-						if (page > 1) {
-							page = this.page - 1;
-						} else {
-							page = 1;
-						}
-					}
-					this.getSaleAttrs(page);
+		async removeSaleAttr({ id, saleAttrName }) {
+			let result = await this.$API.saleattr.reqSpuList(id);
+			if (result.code == 200) {
+				this.spuList = result.data;
+			}
+			// 如果不为空
+			if (this.spuList.length > 0) {
+				this.$alert(`“${saleAttrName}”下存在spu，无法删除。`, "提示", {
+					confirmButtonText: "查看",
+					type: "warning",
 				})
-				.catch(() => {});
+					.then(() => {
+						this.dialogTableVisible = true;
+					})
+					.catch(() => {
+						// 清除spu列表的数据
+						this.spuList = [];
+					});
+			} else {
+				this.$confirm(`确定删除 '${saleAttrName}' 吗?`, "提示", {
+					confirmButtonText: "确定",
+					cancelButtonText: "取消",
+					type: "warning",
+				})
+					.then(async () => {
+						const result = await this.$API.saleattr.removeById(id);
+						this.$message.success(result.message || "删除成功!");
+						// 如果是本页的数据个数大于1，则停留在当前页，否则停在前一页（期间注意不能让page减成0了）
+						let page = 0;
+						if (this.saleAttrs.length > 1) {
+							page = this.page;
+						} else {
+							if (page > 1) {
+								page = this.page - 1;
+							} else {
+								page = 1;
+							}
+						}
+						this.getSaleAttrs(page);
+					})
+					.catch(() => {});
+			}
+		},
+		async getAllSpuInSaleAttr({ id, saleAttrName }) {
+			let result = await this.$API.saleattr.reqSpuList(id);
+			if (result.code == 200) {
+				this.spuList = result.data;
+			}
+			this.dialogTableVisible = true;
+		},
+		// 关闭对话框时执这个
+		close(done) {
+			// 清除spu列表的数据
+			this.spuList = [];
+			// 关闭对话框
+			done();
 		},
 	},
 };
