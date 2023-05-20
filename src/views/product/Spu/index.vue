@@ -1,11 +1,21 @@
 <template>
 	<div>
 		<el-card style="margin: 20px 0px">
-			<!-- 三级列表 -->
-			<CategorySelect
-				@getCategoryId="getCategoryId"
-				:show="scene != 0"
-			></CategorySelect>
+			<div style="display: flex">
+				<!-- 三级列表 -->
+				<CategorySelect
+					@getCategoryId="getCategoryId"
+					@resetMethod="receiveResetMethod"
+					:show="scene != 0"
+				></CategorySelect>
+				<el-button
+					type="primary"
+					@click="resetCategoryId"
+					style="margin-bottom: 20px; margin-left: 40px"
+					:disabled="scene != 0"
+					>查看所有SPU</el-button
+				>
+			</div>
 		</el-card>
 		<el-card>
 			<!-- 数据列表部分 -->
@@ -143,12 +153,15 @@ export default {
 		SpuForm,
 		SkuForm,
 	},
+	mounted() {
+		this.getSpuList();
+	},
 	data() {
 		return {
 			// 各级列表的id
-			category1Id: "",
-			category2Id: "",
-			category3Id: "",
+			category1Id: 0,
+			category2Id: 0,
+			category3Id: 0,
 			page: 1,
 			limit: 5,
 			total: 0,
@@ -168,21 +181,41 @@ export default {
 		getCategoryId({ categoryId, level }) {
 			if (level == 1) {
 				this.category1Id = categoryId;
-				this.category2Id = "";
-				this.category3Id = "";
+				this.category2Id = 0;
+				this.category3Id = 0;
+				this.getSpuList();
 			} else if (level == 2) {
 				this.category2Id = categoryId;
-				this.category3Id = "";
+				this.category3Id = 0;
+				this.getSpuList();
 			} else {
 				this.category3Id = categoryId;
 				this.getSpuList();
 			}
 		},
+		receiveResetMethod(resetMethod) {
+			this.resetMethodFromChild = resetMethod;
+		},
+		resetCategoryId() {
+			this.category1Id = 0;
+			this.category2Id = 0;
+			this.category3Id = 0;
+			this.getSpuList();
+			if (this.resetMethodFromChild) {
+				this.resetMethodFromChild();
+			}
+		},
 		// 这儿的形参名必须写pages，因为这儿用到了解构
 		async getSpuList(pages = 1) {
 			this.page = pages;
-			const { page, limit, category3Id } = this;
-			let result = await this.$API.spu.reqSpuList(page, limit, category3Id);
+			const { page, limit, category1Id, category2Id, category3Id } = this;
+			let result = await this.$API.spu.reqSpuList(
+				page,
+				limit,
+				category1Id,
+				category2Id,
+				category3Id
+			);
 			if (result.code == 200) {
 				this.total = result.data.total;
 				this.records = result.data.records;
@@ -197,7 +230,11 @@ export default {
 			// 通知子组件SpuForm发请求（添加操作只用发2个参数，修改操作是4个）
 			// 顺便把category3Id传过去。因为添加时本身是没有category3Id的
 			// 修改时的category3Id是从服务器取得的
-			this.$refs.spu.addSpuData(this.category3Id);
+			this.$refs.spu.addSpuData(
+				this.category1Id,
+				this.category2Id,
+				this.category3Id
+			);
 		},
 		updateSpu(row) {
 			this.scene = 1;

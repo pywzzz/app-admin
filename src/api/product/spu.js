@@ -1,11 +1,17 @@
 import request from "@/utils/request";
 
 //获取SPU列表中的数据
-export const reqSpuList = (page, limit, category3Id) =>
+export const reqSpuList = (
+	page,
+	limit,
+	category1Id,
+	category2Id,
+	category3Id
+) =>
 	request({
 		url: `/admin/product/${page}/${limit}`,
 		method: "get",
-		params: { category3Id },
+		params: { category1Id, category2Id, category3Id },
 	});
 
 //获取SPU信息

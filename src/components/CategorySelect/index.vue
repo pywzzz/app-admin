@@ -64,6 +64,11 @@
 export default {
 	name: "CategorySelect",
 	props: ["show"],
+	mounted() {
+		// 上去先获得一级列表的数据，让用户至少有东西去点
+		this.getCategory1List();
+		this.$emit("resetMethod", this.resetCategoryIdForm);
+	},
 	data() {
 		return {
 			list1: [],
@@ -78,6 +83,12 @@ export default {
 		};
 	},
 	methods: {
+		// 这个用于清除下拉框中已选择的内容
+		resetCategoryIdForm() {
+			this.categoryIdForm.category1Id = "";
+			this.categoryIdForm.category2Id = "";
+			this.categoryIdForm.category3Id = "";
+		},
 		async getCategory1List() {
 			//获取一级分类相关数据，一级分类的接口不用带参数
 			let result = await this.$API.attr.reqCategory1List();
@@ -119,10 +130,6 @@ export default {
 			// 向父组件Attr传参
 			this.$emit("getCategoryId", { categoryId: category3Id, level: 3 });
 		},
-	},
-	mounted() {
-		// 上去先获得一级列表的数据，让用户至少有东西去点
-		this.getCategory1List();
 	},
 };
 </script>

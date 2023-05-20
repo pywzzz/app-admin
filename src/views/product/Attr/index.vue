@@ -1,11 +1,21 @@
 <template>
 	<div>
 		<el-card style="margin: 20px 0px">
-			<!-- 用自定义事件@getCategoryId实现子组件CategorySelect向父组件Attr传参 -->
-			<CategorySelect
-				@getCategoryId="getCategoryId"
-				:show="!isShowTable"
-			></CategorySelect>
+			<div style="display: flex">
+				<!-- 用自定义事件@getCategoryId实现子组件CategorySelect向父组件Attr传参 -->
+				<CategorySelect
+					@getCategoryId="getCategoryId"
+					@resetMethod="receiveResetMethod"
+					:show="!isShowTable"
+				></CategorySelect>
+				<el-button
+					type="primary"
+					@click="resetCategoryId"
+					style="margin-bottom: 20px; margin-left: 40px"
+					:disabled="!isShowTable"
+					>查看所有平台属性</el-button
+				>
+			</div>
 		</el-card>
 		<el-card>
 			<!-- 三级列表筛后的，属性，的展示部分 -->
@@ -194,11 +204,14 @@
 import cloneDeep from "lodash/cloneDeep";
 export default {
 	name: "Attr",
+	mounted() {
+		this.getAttrList();
+	},
 	data() {
 		return {
-			category1Id: "",
-			category2Id: "",
-			category3Id: "",
+			category1Id: 0,
+			category2Id: 0,
+			category3Id: 0,
 			//存由三级列表筛后的，产品数据
 			attrList: [],
 			isShowTable: true,
@@ -210,6 +223,8 @@ export default {
 				//属性值
 				//其中存的是如 { attrId: 0, valueName: "" } ，attrId为属性值对应的属性名的id，valueName为属性值
 				attrValueList: [],
+				category1Id: 0,
+				category2Id: 0,
 				//这里面存的是这个属性名，所对应三级列表的id
 				categoryId: 0,
 				//区分是几级列表的id
@@ -231,15 +246,29 @@ export default {
 			// 把子组件CategorySelect传来的数据保存父组件Attr的data中
 			if (level == 1) {
 				this.category1Id = categoryId;
-				this.category2Id = "";
-				this.category3Id = "";
+				this.category2Id = 0;
+				this.category3Id = 0;
+				this.getAttrList();
 			} else if (level == 2) {
 				this.category2Id = categoryId;
-				this.category3Id = "";
+				this.category3Id = 0;
+				this.getAttrList();
 			} else if (level == 3) {
 				this.category3Id = categoryId;
 				// 在有了第三级列表的id后，就该在组件展示数据了
 				this.getAttrList();
+			}
+		},
+		receiveResetMethod(resetMethod) {
+			this.resetMethodFromChild = resetMethod;
+		},
+		resetCategoryId() {
+			this.category1Id = 0;
+			this.category2Id = 0;
+			this.category3Id = 0;
+			this.getAttrList();
+			if (this.resetMethodFromChild) {
+				this.resetMethodFromChild();
 			}
 		},
 		async getAttrList() {
@@ -281,6 +310,8 @@ export default {
 			this.attrInfo = {
 				attrName: "",
 				attrValueList: [],
+				category1Id: this.category1Id,
+				category2Id: this.category2Id,
 				// 手机第三级列表的id
 				categoryId: this.category3Id,
 				categoryLevel: 3,

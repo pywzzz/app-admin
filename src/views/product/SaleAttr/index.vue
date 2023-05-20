@@ -1,8 +1,19 @@
 <template>
 	<div>
 		<el-card style="margin: 20px 0px">
-			<!-- 用自定义事件@getCategoryId实现子组件CategorySelect向父组件Attr传参 -->
-			<CategorySelect @getCategoryId="getCategoryId"></CategorySelect>
+			<div style="display: flex">
+				<!-- 用自定义事件@getCategoryId实现子组件CategorySelect向父组件Attr传参 -->
+				<CategorySelect
+					@getCategoryId="getCategoryId"
+					@resetMethod="receiveResetMethod"
+				></CategorySelect>
+				<el-button
+					type="primary"
+					@click="resetCategoryId"
+					style="margin-bottom: 20px; margin-left: 40px"
+					>查看所有销售属性</el-button
+				>
+			</div>
 		</el-card>
 		<div style="margin-bottom: 20px">
 			<el-button type="primary" @click="addSaleAttr" :disabled="!category3Id"
@@ -114,11 +125,14 @@
 <script>
 export default {
 	name: "SaleAttr",
+	mounted() {
+		this.getSaleAttrs();
+	},
 	data() {
 		return {
-			category1Id: "",
-			category2Id: "",
-			category3Id: "",
+			category1Id: 0,
+			category2Id: 0,
+			category3Id: 0,
 			// 销售属性列表
 			saleAttrs: [],
 			// 存储某个销售属性包含的spu
@@ -140,15 +154,29 @@ export default {
 			// 把子组件CategorySelect传来的数据保存父组件Attr的data中
 			if (level == 1) {
 				this.category1Id = categoryId;
-				this.category2Id = "";
-				this.category3Id = "";
+				this.category2Id = 0;
+				this.category3Id = 0;
+				this.getSaleAttrs();
 			} else if (level == 2) {
 				this.category2Id = categoryId;
-				this.category3Id = "";
+				this.category3Id = 0;
+				this.getSaleAttrs();
 			} else if (level == 3) {
 				this.category3Id = categoryId;
 				// 在有了第三级列表的id后，就该在组件展示数据了
 				this.getSaleAttrs();
+			}
+		},
+		receiveResetMethod(resetMethod) {
+			this.resetMethodFromChild = resetMethod;
+		},
+		resetCategoryId() {
+			this.category1Id = 0;
+			this.category2Id = 0;
+			this.category3Id = 0;
+			this.getSaleAttrs();
+			if (this.resetMethodFromChild) {
+				this.resetMethodFromChild();
 			}
 		},
 		// 异步获取销售属性分页列表
@@ -179,7 +207,12 @@ export default {
 			})
 				.then(({ value }) => {
 					this.$API.saleattr
-						.save({ saleAttrName: value, category3Id: this.category3Id })
+						.save({
+							saleAttrName: value,
+							category1Id: this.category1Id,
+							category2Id: this.category2Id,
+							category3Id: this.category3Id,
+						})
 						.then((result) => {
 							this.$message.success(result.message || "添加成功");
 							this.getSaleAttrs();

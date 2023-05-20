@@ -127,6 +127,8 @@ export default {
 			dialogImageUrl: "",
 			dialogVisible: false,
 			spu: {
+				category1Id: 0,
+				category2Id: 0,
 				// 三级分类的id
 				category3Id: 0,
 				// 描述
@@ -195,7 +197,9 @@ export default {
 				this.spuImageList = listArr;
 			}
 			// 获取平台全部的销售属性
-			let saleResult = await this.$API.spu.reqBaseSaleAttrList(this.spu.category3Id);
+			let saleResult = await this.$API.spu.reqBaseSaleAttrList(
+				this.spu.category3Id
+			);
 			if (saleResult.code == 200) {
 				this.saleAttrList = saleResult.data;
 			}
@@ -281,7 +285,9 @@ export default {
 			Object.assign(this._data, this.$options.data());
 		},
 		// 点击添加SPU按钮的时候，发请求的函数
-		async addSpuData(category3Id) {
+		async addSpuData(category1Id, category2Id, category3Id) {
+			this.spu.category1Id = category1Id;
+			this.spu.category2Id = category2Id;
 			// 添加SPU的时候收集三级分类的id（这个是父组件传过来的）
 			this.spu.category3Id = category3Id;
 			// 获取品牌的信息
