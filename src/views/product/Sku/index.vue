@@ -174,6 +174,10 @@ export default {
 	components: {
 		UpdateSku,
 	},
+	mounted() {
+		// 获取sku列表的方法
+		this.getSkuList();
+	},
 	data() {
 		return {
 			// 当前是第几页
@@ -247,7 +251,7 @@ export default {
 				if (this.records.length > 1) {
 					page = this.page;
 				} else {
-					if (page > 1) {
+					if (this.page > 1) {
 						page = this.page - 1;
 					} else {
 						page = 1;
@@ -264,10 +268,6 @@ export default {
 		changeScene(scene) {
 			this.scene = scene;
 		},
-	},
-	mounted() {
-		// 获取sku列表的方法
-		this.getSkuList();
 	},
 };
 </script>

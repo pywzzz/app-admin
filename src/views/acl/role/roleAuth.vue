@@ -17,34 +17,28 @@
 <script>
 export default {
 	name: "roleAuth",
-
+	mounted() {
+		this.init();
+	},
 	data() {
 		return {
-			loading: false, // 用来标识是否正在保存请求中的标识, 防止重复提交
-			allPermissions: [], // 所有
+			// 用来标识是否正在保存请求中的标识, 防止重复提交
+			loading: false,
+			// 所有权限
+			allPermissions: [],
 			defaultProps: {
 				children: "children",
 				label: "name",
 			},
 		};
 	},
-
-	created() {
-		this.init();
-	},
-
 	methods: {
-		/* 
-      初始化
-      */
+		//   初始化
 		init() {
 			const roleId = this.$route.params.id;
 			this.getPermissions(roleId);
 		},
-
-		/* 
-      获取指定角色的权限列表
-      */
+		//   获取指定角色的权限列表
 		getPermissions(roleId) {
 			this.$API.permission.getPermissionList().then((result) => {
 				const allPermissions = result.data;
@@ -54,10 +48,7 @@ export default {
 				});
 			});
 		},
-
-		/* 
-      保存权限列表
-      */
+		//   保存权限列表
 		save() {
 			const ids = this.$refs.tree
 				.getCheckedKeys()

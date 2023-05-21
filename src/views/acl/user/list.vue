@@ -86,7 +86,7 @@
 			:total="total"
 			:page-size="limit"
 			:page-sizes="[5, 10, 20]"
-			style="padding: 20px 0"
+			style="margin-top: 20px; text-align: center"
 			layout="prev, pager, next, jumper, ->, sizes, total"
 			@current-change="getUsers"
 			@size-change="handleSizeChange"
@@ -169,7 +169,9 @@ import { validUsername, validPassword } from "@/utils/validate";
 
 export default {
 	name: "AclUserList",
-
+	mounted() {
+		this.getUsers();
+	},
 	data() {
 		const validateUsername = (rule, value, callback) => {
 			if (!validUsername(value)) {
@@ -190,7 +192,8 @@ export default {
 			}
 		};
 		return {
-			listLoading: false, // 是否显示列表加载的提示
+			// 是否显示列表加载的提示
+			listLoading: false,
 			searchObj: {
 				// 包含请求搜索条件数据的对象
 				username: "",
@@ -199,13 +202,17 @@ export default {
 				// 收集搜索条件输入的对象
 				username: "",
 			},
-			selectedIds: [], // 所有选择的user的id的数组
-			users: [], // 当前页的用户列表
-			page: 1, // 当前页码
-			limit: 5, // 每页数量
-			total: 0, // 总数量
-			user: {}, // 当前要操作的user
-			dialogUserVisible: false, // 是否显示用户添加/修改的dialog
+			// 所有选择的user的id的数组
+			selectedIds: [],
+			// 当前页的用户列表
+			users: [],
+			page: 1,
+			limit: 5,
+			total: 0,
+			// 当前要操作的user
+			user: {},
+			// 是否显示用户添加/修改的dialog
+			dialogUserVisible: false,
 			userRules: {
 				// 用户添加/修改表单的校验规则
 				account: [
@@ -215,20 +222,20 @@ export default {
 					{ required: true, trigger: "blur", validator: validatePassword },
 				],
 			},
-			loading: false, // 是否正在提交请求中
-			dialogRoleVisible: false, // 是否显示角色Dialog
-			allRoles: [], // 所有角色列表
-			userRoleIds: [], // 用户的角色ID的列表
-			isIndeterminate: false, // 是否是不确定的
-			checkAll: false, // 是否全选
+			// 是否正在提交请求中
+			loading: false,
+			// 是否显示角色Dialog
+			dialogRoleVisible: false,
+			// 所有角色列表
+			allRoles: [],
+			// 用户的角色ID的列表
+			userRoleIds: [],
+			// 是否是不确定的
+			isIndeterminate: false,
+			// 是否全选
+			checkAll: false,
 		};
 	},
-
-	//发请求一般情况下，我们都是在mounted去发，但是也可以在created内部去发
-	created() {
-		this.getUsers();
-	},
-
 	methods: {
 		formatRoles(row, column, cellValue) {
 			// 检查 cellValue 是否为 null 或 undefined，如果是，则返回一个空字符串
@@ -238,19 +245,13 @@ export default {
 			// 使用数组的 join() 方法将数组元素连接成一个字符串，元素之间用逗号分隔
 			return cellValue.join("，");
 		},
-
-		/* 
-    显示指定角色的界面
-    */
+		// 显示指定角色的界面
 		showAssignRole(user) {
 			this.user = user;
 			this.dialogRoleVisible = true;
 			this.getRoles();
 		},
-
-		/* 
-    全选勾选状态发生改变的监听
-    */
+		// 全选勾选状态发生改变的监听
 		handleCheckAllChange(value) {
 			// value 当前勾选状态true/false
 			// 如果当前全选, userRoleIds就是所有角色id的数组, 否则是空数组
@@ -258,10 +259,7 @@ export default {
 			// 如果当前不是全选也不全不选时, 指定为false
 			this.isIndeterminate = false;
 		},
-
-		/* 
-    异步获取用户的角色列表
-    */
+		// 异步获取用户的角色列表
 		async getRoles() {
 			const result = await this.$API.user.getRoles(this.user.id);
 			const { allRolesList, assignRoles } = result.data;
@@ -272,10 +270,7 @@ export default {
 			this.isIndeterminate =
 				assignRoles.length > 0 && assignRoles.length < allRolesList.length;
 		},
-
-		/* 
-    角色列表选中项发生改变的监听
-    */
+		// 角色列表选中项发生改变的监听
 		handleCheckedChange(value) {
 			const { userRoleIds, allRoles } = this;
 			this.checkAll =
@@ -283,10 +278,7 @@ export default {
 			this.isIndeterminate =
 				userRoleIds.length > 0 && userRoleIds.length < allRoles.length;
 		},
-
-		/* 
-    请求给用户进行角色授权
-    */
+		// 请求给用户进行角色授权
 		async assignRole() {
 			const userId = this.user.id;
 			const roleIds = this.userRoleIds.join(",");
@@ -294,17 +286,14 @@ export default {
 			const result = await this.$API.user.assignRoles(userId, roleIds);
 			this.loading = false;
 			this.$message.success(result.message || "分配角色成功");
+			this.getUsers(this.page);
 			this.resetRoleData();
 
-			// console.log(this.$store.getters.name, this.user)
 			if (this.$store.getters.name === this.user.username) {
 				window.location.reload();
 			}
 		},
-
-		/* 
-    重置用户角色的数据
-    */
+		// 重置用户角色的数据
 		resetRoleData() {
 			this.dialogRoleVisible = false;
 			this.allRoles = [];
@@ -312,18 +301,12 @@ export default {
 			this.isIndeterminate = false;
 			this.checkAll = false;
 		},
-
-		/* 
-    根据输入进行搜索
-    */
+		// 根据输入进行搜索
 		search() {
 			this.searchObj = { ...this.tempSearchObj };
 			this.getUsers();
 		},
-
-		/* 
-    重置输入后搜索
-    */
+		// 重置输入后搜索
 		resetSearch() {
 			this.searchObj = {
 				username: "",
@@ -333,20 +316,14 @@ export default {
 			};
 			this.getUsers();
 		},
-
-		/* 
-    显示添加用户的界面
-    */
+		// 显示添加用户的界面
 		showAddUser() {
 			this.user = {};
 			this.dialogUserVisible = true;
 			// 重置表单的验证规则
 			this.$nextTick(() => this.$refs.userForm.clearValidate());
 		},
-
-		/* 
-    删除所有选中的用户
-    */
+		// 删除所有选中的用户
 		revomveUsers() {
 			this.$confirm("确定删除吗?")
 				.then(async () => {
@@ -354,38 +331,35 @@ export default {
 					this.$message.success("删除成功");
 					this.getUsers();
 				})
-				.catch(() => {
-					this.$message.info("取消删除");
-				});
+				.catch(() => {});
 		},
-
-		/* 
-    列表选中状态发生改变的监听回调
-    */
+		// 列表选中状态发生改变的监听回调
 		handleSelectionChange(selection) {
 			this.selectedIds = selection.map((item) => item.id);
 		},
-
-		/* 
-    显示更新用户的界面
-    */
+		// 显示更新用户的界面
 		showUpdateUser(user) {
 			this.user = cloneDeep(user);
 			this.dialogUserVisible = true;
 		},
-
-		/* 
-    删除某个用户
-    */
+		// 删除某个用户
 		async removeUser(id) {
 			await this.$API.user.removeById(id);
 			this.$message.success("删除成功");
-			this.getUsers(this.users.length === 1 ? this.page - 1 : this.page);
+			// 如果是本页的数据个数大于1，则停留在当前页，否则停在前一页（期间注意不能让page减成0了）
+			let page = 0;
+			if (this.users.length > 1) {
+				page = this.page;
+			} else {
+				if (this.page > 1) {
+					page = this.page - 1;
+				} else {
+					page = 1;
+				}
+			}
+			this.getUsers(page);
 		},
-
-		/* 
-    获取分页列表
-    */
+		// 获取分页列表
 		async getUsers(page = 1) {
 			this.page = page;
 			const { limit, searchObj } = this;
@@ -397,26 +371,17 @@ export default {
 			this.total = total - 1;
 			this.selectedIds = [];
 		},
-
-		/* 
-    处理pageSize发生改变的监听回调
-    */
+		// 处理pageSize发生改变的监听回调
 		handleSizeChange(pageSize) {
 			this.limit = pageSize;
 			this.getUsers();
 		},
-
-		/* 
-    取消用户的保存或更新
-    */
+		// 取消用户的保存或更新
 		cancel() {
 			this.dialogUserVisible = false;
 			this.user = {};
 		},
-
-		/* 
-    保存或者更新用户
-    */
+		// 保存或者更新用户
 		addOrUpdate() {
 			this.$refs.userForm.validate((valid) => {
 				if (valid) {

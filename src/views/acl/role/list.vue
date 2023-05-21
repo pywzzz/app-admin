@@ -103,7 +103,7 @@
 			:total="total"
 			:page-size="limit"
 			:page-sizes="[5, 10, 20, 30, 40, 50, 100]"
-			style="padding: 20px 0"
+			style="margin-top: 20px; text-align: center"
 			layout="prev, pager, next, jumper, ->, sizes, total"
 			@current-change="getRoles"
 			@size-change="handleSizeChange"
@@ -114,14 +114,18 @@
 <script>
 export default {
 	name: "RoleList",
-
+	mounted() {
+		this.getRoles();
+	},
 	data() {
 		return {
-			listLoading: true, // 数据是否正在加载
-			roles: [], // 角色列表
-			total: 0, // 总记录数
-			page: 1, // 当前页码
-			limit: 5, // 每页记录数
+			// 数据是否正在加载
+			listLoading: true,
+			// 角色列表
+			roles: [],
+			total: 0,
+			page: 1,
+			limit: 5,
 			tempSearchObj: {
 				// 收集搜索条件数据
 				roleName: "",
@@ -130,27 +134,17 @@ export default {
 				// 发送请求的条件参数数据
 				roleName: "",
 			},
-			selectedRoles: [], // 所有选中的角色列表
+			// 所有选中的角色列表
+			selectedRoles: [],
 		};
 	},
-
-	mounted() {
-		this.getRoles();
-	},
-
 	methods: {
-		/* 
-    取消修改
-    */
+		// 取消修改
 		cancelEdit(role) {
 			role.roleName = role.originRoleName;
 			role.edit = false;
-			this.$message.warning("取消角色修改");
 		},
-
-		/* 
-    更新角色
-    */
+		// 更新角色
 		updateRole(role) {
 			this.$API.role
 				.updateById({ id: role.id, roleName: role.roleName })
@@ -159,18 +153,12 @@ export default {
 					this.getRoles(this.page);
 				});
 		},
-
-		/* 
-    每页数量发生改变的监听
-    */
+		// 每页数量发生改变的监听
 		handleSizeChange(pageSize) {
 			this.limit = pageSize;
 			this.getRoles();
 		},
-
-		/* 
-    添加角色
-    */
+		// 添加角色
 		addRole() {
 			// 显示添加界面
 			this.$prompt("请输入新名称", "添加角色", {
@@ -183,14 +171,9 @@ export default {
 						this.getRoles();
 					});
 				})
-				.catch(() => {
-					this.$message.warning("取消添加");
-				});
+				.catch(() => {});
 		},
-
-		/* 
-    异步获取角色分页列表
-    */
+		// 异步获取角色分页列表
 		getRoles(page = 1) {
 			this.page = page;
 			this.listLoading = true;
@@ -210,18 +193,12 @@ export default {
 					this.listLoading = false;
 				});
 		},
-
-		/* 
-    根据搜索条件进行搜索
-    */
+		// 根据搜索条件进行搜索
 		search() {
 			this.searchObj = { ...this.tempSearchObj };
 			this.getRoles();
 		},
-
-		/* 
-    重置查询表单搜索列表
-    */
+		// 重置查询表单搜索列表
 		resetSearch() {
 			this.tempSearchObj = {
 				roleName: "",
@@ -231,34 +208,36 @@ export default {
 			};
 			this.getRoles();
 		},
-
-		/* 
-    删除指定的角色
-    */
+		// 删除指定的角色
 		removeRole({ id, roleName }) {
 			this.$confirm(`确定删除 '${roleName}' 吗?`, "提示", {
 				type: "warning",
+				confirmButtonText: "确定",
+				cancelButtonText: "取消",
 			})
 				.then(async () => {
 					const result = await this.$API.role.removeById(id);
-					this.getRoles(this.roles.length === 1 ? this.page - 1 : this.page);
+					// 如果是本页的数据个数大于1，则停留在当前页，否则停在前一页（期间注意不能让page减成0了）
+					let page = 0;
+					if (this.roles.length > 1) {
+						page = this.page;
+					} else {
+						if (this.page > 1) {
+							page = this.page - 1;
+						} else {
+							page = 1;
+						}
+					}
+					this.getRoles(page);
 					this.$message.success(result.message || "删除成功!");
 				})
-				.catch(() => {
-					this.$message.info("已取消删除");
-				});
+				.catch(() => {});
 		},
-
-		/* 
-    当表格复选框选项发生变化的时候触发
-    */
+		// 当表格复选框选项发生变化的时候触发
 		handleSelectionChange(selection) {
 			this.selectedRoles = selection;
 		},
-
-		/* 
-    批量删除
-    */
+		// 批量删除
 		removeRoles() {
 			this.$confirm("此操作将永久删除该记录, 是否继续?", "提示", {
 				type: "warning",
@@ -273,12 +252,7 @@ export default {
 					});
 				})
 				.then((result) => {})
-				.catch(() => {
-					this.$message({
-						type: "info",
-						message: "已取消删除",
-					});
-				});
+				.catch(() => {});
 		},
 	},
 };

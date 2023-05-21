@@ -261,7 +261,7 @@ export default {
 				if (this.records.length > 1) {
 					page = this.page;
 				} else {
-					if (page > 1) {
+					if (this.page > 1) {
 						page = this.page - 1;
 					} else {
 						page = 1;
