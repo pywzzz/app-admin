@@ -90,7 +90,7 @@
 			:total="total"
 			:page-size="limit"
 			:page-sizes="[5, 10, 20, 30, 40, 50, 100]"
-			style="padding: 20px 0"
+			style="margin-top: 20px; text-align: center"
 			layout="prev, pager, next, jumper, ->, sizes, total"
 			@current-change="getSaleAttrs"
 			@size-change="handleSizeChange"

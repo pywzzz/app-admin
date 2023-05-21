@@ -29,7 +29,13 @@
 					>添加属性</el-button
 				>
 				<el-table style="width: 100%" border :data="attrList">
-					<el-table-column type="index" label="序号" width="80" align="center">
+					<el-table-column
+						type="index"
+						:index="(index) => (page - 1) * limit + index + 1"
+						label="序号"
+						width="80"
+						align="center"
+					>
 					</el-table-column>
 					<el-table-column prop="attrName" label="属性名称" width="150">
 					</el-table-column>
@@ -79,6 +85,16 @@
 						</template>
 					</el-table-column>
 				</el-table>
+				<el-pagination
+					style="margin-top: 20px; text-align: center"
+					:current-page="page"
+					:total="total"
+					:page-size="limit"
+					:page-sizes="[5, 10, 20, 30, 40, 50, 100]"
+					layout="prev, pager, next, jumper, ->, sizes, total"
+					@current-change="handleCurrentChange"
+					@size-change="handleSizeChange"
+				/>
 			</div>
 
 			<!-- 添加或修改属性的部分 -->
@@ -212,6 +228,9 @@ export default {
 			category1Id: 0,
 			category2Id: 0,
 			category3Id: 0,
+			total: 0,
+			page: 1,
+			limit: 5,
 			//存由三级列表筛后的，产品数据
 			attrList: [],
 			isShowTable: true,
@@ -248,13 +267,16 @@ export default {
 				this.category1Id = categoryId;
 				this.category2Id = 0;
 				this.category3Id = 0;
+				this.handleCurrentChange(1);
 				this.getAttrList();
 			} else if (level == 2) {
 				this.category2Id = categoryId;
 				this.category3Id = 0;
+				this.handleCurrentChange(1);
 				this.getAttrList();
 			} else if (level == 3) {
 				this.category3Id = categoryId;
+				this.handleCurrentChange(1);
 				// 在有了第三级列表的id后，就该在组件展示数据了
 				this.getAttrList();
 			}
@@ -266,22 +288,34 @@ export default {
 			this.category1Id = 0;
 			this.category2Id = 0;
 			this.category3Id = 0;
+			this.handleCurrentChange(1);
 			this.getAttrList();
 			if (this.resetMethodFromChild) {
 				this.resetMethodFromChild();
 			}
 		},
+		handleCurrentChange(page) {
+			this.page = page;
+			this.getAttrList();
+		},
+		handleSizeChange(limit) {
+			this.limit = limit;
+			this.getAttrList();
+		},
 		async getAttrList() {
 			//获取分类的ID
-			const { category1Id, category2Id, category3Id } = this;
+			const { page, limit, category1Id, category2Id, category3Id } = this;
 			//获取属性列表的数据
 			let result = await this.$API.attr.reqAttrList(
+				page,
+				limit,
 				category1Id,
 				category2Id,
 				category3Id
 			);
 			if (result.code == 200) {
-				this.attrList = result.data;
+				this.attrList = result.data.records;
+				this.total = result.data.total;
 			}
 		},
 		addAttrValue() {
@@ -392,6 +426,10 @@ export default {
 				this.isShowTable = true;
 				// 提示消失
 				this.$message({ type: "success", message: "保存成功" });
+				// 如果是添加操作，则跳转到第1页；如果是修改，则停留在当前页
+				this.handleCurrentChange(
+					this.addOrUpdateFlag == "update" ? this.page : 1
+				);
 				// 保存成功后再次获取数据
 				this.getAttrList();
 			} catch (error) {
@@ -399,10 +437,23 @@ export default {
 			}
 		},
 		async deleteAttr(row) {
-			if (this.attrList && this.attrList.length > 1) {
+			let status = await this.$API.attr.reqAttrStatus(row.categoryId);
+			if (status.code == 200) {
 				let result = await this.$API.attr.reqDeleteAttr(row.id);
 				if (result.code == 200) {
 					this.$message({ type: "success", message: "删除成功" });
+					// 如果是本页的数据个数大于1，则停留在当前页，否则停在前一页（期间注意不能让page减成0了）
+					let page = 0;
+					if (this.attrList.length > 1) {
+						page = this.page;
+					} else {
+						if (page > 1) {
+							page = this.page - 1;
+						} else {
+							page = 1;
+						}
+					}
+					this.handleCurrentChange(page);
 					this.getAttrList();
 				}
 			} else {
