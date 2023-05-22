@@ -1,6 +1,15 @@
 <template>
 	<div>
 		<div v-show="scene == 0">
+			<el-form inline>
+				<el-form-item>
+					<el-input v-model="tempSearchObj.skuName" placeholder="SKU名称" />
+				</el-form-item>
+				<el-button type="primary" icon="el-icon-search" @click="search"
+					>查询</el-button
+				>
+				<el-button @click="resetSearch">清空</el-button>
+			</el-form>
 			<!-- 表格 -->
 			<el-table style="width: 100%" border :data="records">
 				<el-table-column
@@ -186,6 +195,14 @@ export default {
 			limit: 10,
 			// 一共多少条数据
 			total: 0,
+			tempSearchObj: {
+				// 收集搜索条件数据
+				skuName: "",
+			},
+			searchObj: {
+				// 发送请求的条件参数数据
+				skuName: "",
+			},
 			// 存储SKU列表中的数据
 			records: [],
 			// 存储sku的详情
@@ -206,11 +223,29 @@ export default {
 			this.limit = limit;
 			this.getSkuList();
 		},
+		search() {
+			this.searchObj = { ...this.tempSearchObj };
+			this.getSkuList();
+		},
+		// 重置查询表单搜索列表
+		resetSearch() {
+			this.tempSearchObj = {
+				skuName: "",
+			};
+			this.searchObj = {
+				skuName: "",
+			};
+			this.getSkuList();
+		},
 		async getSkuList(pages = 1) {
 			this.page = pages;
 			// 解构出默认的参数
-			const { page, limit } = this;
-			let result = await this.$API.sku.reqSkuList(page, limit);
+			const { page, limit, searchObj } = this;
+			let result = await this.$API.sku.reqSkuList(
+				page,
+				limit,
+				searchObj.skuName
+			);
 			if (result.code == 200) {
 				this.total = result.data.total;
 				this.records = result.data.records;

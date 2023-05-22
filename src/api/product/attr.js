@@ -18,11 +18,13 @@ export const reqAttrList = (
 	limit,
 	category1Id,
 	category2Id,
-	category3Id
+	category3Id,
+	searchObj
 ) =>
 	request({
 		url: `/admin/product/attrInfoList/${category1Id}/${category2Id}/${category3Id}/${page}/${limit}`,
 		method: "get",
+		params: searchObj,
 	});
 
 //添加属性与属性值接口

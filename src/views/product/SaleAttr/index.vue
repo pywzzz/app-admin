@@ -15,6 +15,18 @@
 				>
 			</div>
 		</el-card>
+		<el-form inline>
+			<el-form-item>
+				<el-input
+					v-model="tempSearchObj.saleAttrName"
+					placeholder="销售属性名称"
+				/>
+			</el-form-item>
+			<el-button type="primary" icon="el-icon-search" @click="search"
+				>查询</el-button
+			>
+			<el-button @click="resetSearch">清空</el-button>
+		</el-form>
 		<div style="margin-bottom: 20px">
 			<el-button type="primary" @click="addSaleAttr" :disabled="!category3Id"
 				>添加销售属性</el-button
@@ -133,6 +145,15 @@ export default {
 			category1Id: 0,
 			category2Id: 0,
 			category3Id: 0,
+			limit: 5,
+			tempSearchObj: {
+				// 收集搜索条件数据
+				saleAttrName: "",
+			},
+			searchObj: {
+				// 发送请求的条件参数数据
+				saleAttrName: "",
+			},
 			// 销售属性列表
 			saleAttrs: [],
 			// 存储某个销售属性包含的spu
@@ -179,12 +200,33 @@ export default {
 				this.resetMethodFromChild();
 			}
 		},
+		search() {
+			this.searchObj = { ...this.tempSearchObj };
+			this.getSaleAttrs();
+		},
+		// 重置查询表单搜索列表
+		resetSearch() {
+			this.tempSearchObj = {
+				saleAttrName: "",
+			};
+			this.searchObj = {
+				saleAttrName: "",
+			};
+			this.getSaleAttrs();
+		},
 		// 异步获取销售属性分页列表
 		getSaleAttrs(page = 1) {
 			this.page = page;
-			const { limit, category1Id, category2Id, category3Id } = this;
+			const { limit, category1Id, category2Id, category3Id, searchObj } = this;
 			this.$API.saleattr
-				.reqSaleAttrList(category1Id, category2Id, category3Id, page, limit)
+				.reqSaleAttrList(
+					category1Id,
+					category2Id,
+					category3Id,
+					page,
+					limit,
+					searchObj
+				)
 				.then((result) => {
 					const { items, total } = result.data;
 					this.saleAttrs = items.map((item) => {

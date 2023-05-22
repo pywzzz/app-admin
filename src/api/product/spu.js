@@ -6,12 +6,13 @@ export const reqSpuList = (
 	limit,
 	category1Id,
 	category2Id,
-	category3Id
+	category3Id,
+	spuName
 ) =>
 	request({
 		url: `/admin/product/${page}/${limit}`,
 		method: "get",
-		params: { category1Id, category2Id, category3Id },
+		params: { category1Id, category2Id, category3Id, spuName },
 	});
 
 //获取SPU信息

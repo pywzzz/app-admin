@@ -20,6 +20,15 @@
 		<el-card>
 			<!-- 数据列表部分 -->
 			<div v-show="scene == 0">
+				<el-form inline>
+					<el-form-item>
+						<el-input v-model="tempSearchObj.spuName" placeholder="SPU名称" />
+					</el-form-item>
+					<el-button type="primary" icon="el-icon-search" @click="search"
+						>查询</el-button
+					>
+					<el-button @click="resetSearch">清空</el-button>
+				</el-form>
 				<!-- 按钮 -->
 				<el-button
 					type="primary"
@@ -165,6 +174,14 @@ export default {
 			page: 1,
 			limit: 5,
 			total: 0,
+			tempSearchObj: {
+				// 收集搜索条件数据
+				spuName: "",
+			},
+			searchObj: {
+				// 发送请求的条件参数数据
+				spuName: "",
+			},
 			records: [],
 			// 0代表显示“数据列表"，1代表显示“添加或修改SPU”，2代表显示“添加SKU”
 			scene: 0,
@@ -205,16 +222,32 @@ export default {
 				this.resetMethodFromChild();
 			}
 		},
+		search() {
+			this.searchObj = { ...this.tempSearchObj };
+			this.getSpuList();
+		},
+		// 重置查询表单搜索列表
+		resetSearch() {
+			this.tempSearchObj = {
+				spuName: "",
+			};
+			this.searchObj = {
+				spuName: "",
+			};
+			this.getSpuList();
+		},
 		// 这儿的形参名必须写pages，因为这儿用到了解构
 		async getSpuList(pages = 1) {
 			this.page = pages;
-			const { page, limit, category1Id, category2Id, category3Id } = this;
+			const { page, limit, category1Id, category2Id, category3Id, searchObj } =
+				this;
 			let result = await this.$API.spu.reqSpuList(
 				page,
 				limit,
 				category1Id,
 				category2Id,
-				category3Id
+				category3Id,
+				searchObj.spuName
 			);
 			if (result.code == 200) {
 				this.total = result.data.total;

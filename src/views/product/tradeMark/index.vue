@@ -1,5 +1,18 @@
 <template>
 	<div>
+		<el-form inline>
+			<el-form-item>
+				<el-input
+					v-model="tempSearchObj.trademarkName"
+					placeholder="品牌名称"
+				/>
+			</el-form-item>
+			<el-button type="primary" icon="el-icon-search" @click="search"
+				>查询</el-button
+			>
+			<el-button @click="resetSearch">清空</el-button>
+		</el-form>
+
 		<!-- 按钮 -->
 		<el-button
 			type="primary"
@@ -187,6 +200,14 @@ export default {
 			tradeMarkList: [],
 			// 控制对话框显示与否
 			dialogFormVisible: false,
+			tempSearchObj: {
+				// 收集搜索条件数据
+				trademarkName: "",
+			},
+			searchObj: {
+				// 发送请求的条件参数数据
+				trademarkName: "",
+			},
 			// 收集品牌信息（其中的字段是和后台相呼应的，不能随便写）
 			tmForm: {
 				tmName: "",
@@ -206,8 +227,12 @@ export default {
 	},
 	methods: {
 		async getPageList() {
-			const { page, limit } = this;
-			let result = await this.$API.trademark.reqTrademarkList(page, limit);
+			const { page, limit, searchObj } = this;
+			let result = await this.$API.trademark.reqTrademarkList(
+				page,
+				limit,
+				searchObj
+			);
 			if (result.code == 200) {
 				this.total = result.data.total;
 				this.list = result.data.records;
@@ -219,6 +244,23 @@ export default {
 		},
 		handleSizeChange(limit) {
 			this.limit = limit;
+			this.getPageList();
+		},
+		// 根据搜索条件进行搜索
+		search() {
+			this.searchObj = { ...this.tempSearchObj };
+			this.handleCurrentChange(1);
+			this.getPageList();
+		},
+		// 重置查询表单搜索列表
+		resetSearch() {
+			this.tempSearchObj = {
+				trademarkName: "",
+			};
+			this.searchObj = {
+				trademarkName: "",
+			};
+			this.handleCurrentChange(1);
 			this.getPageList();
 		},
 		// “品牌管理”中左上角“添加”按钮的回调

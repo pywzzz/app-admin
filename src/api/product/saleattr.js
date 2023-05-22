@@ -6,11 +6,13 @@ export const reqSaleAttrList = (
 	category2Id,
 	category3Id,
 	page,
-	limit
+	limit,
+	searchObj
 ) =>
 	request({
 		url: `/admin/product/saleAttrInfoList/${category1Id}/${category2Id}/${category3Id}/${page}/${limit}`,
 		method: "get",
+		params: searchObj,
 	});
 
 // 添加销售属性

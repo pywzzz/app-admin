@@ -20,6 +20,18 @@
 		<el-card>
 			<!-- 三级列表筛后的，属性，的展示部分 -->
 			<div v-show="isShowTable">
+				<el-form inline>
+					<el-form-item>
+						<el-input
+							v-model="tempSearchObj.attrName"
+							placeholder="平台属性名称"
+						/>
+					</el-form-item>
+					<el-button type="primary" icon="el-icon-search" @click="search"
+						>查询</el-button
+					>
+					<el-button @click="resetSearch">清空</el-button>
+				</el-form>
 				<!-- disabled属性使“添加属性”这个按钮只有在三级列表都选了后，才能点 -->
 				<el-button
 					type="primary"
@@ -231,6 +243,14 @@ export default {
 			total: 0,
 			page: 1,
 			limit: 5,
+			tempSearchObj: {
+				// 收集搜索条件数据
+				attrName: "",
+			},
+			searchObj: {
+				// 发送请求的条件参数数据
+				attrName: "",
+			},
 			//存由三级列表筛后的，产品数据
 			attrList: [],
 			isShowTable: true,
@@ -302,16 +322,34 @@ export default {
 			this.limit = limit;
 			this.getAttrList();
 		},
+		search() {
+			this.searchObj = { ...this.tempSearchObj };
+			this.handleCurrentChange(1);
+			this.getAttrList();
+		},
+		// 重置查询表单搜索列表
+		resetSearch() {
+			this.tempSearchObj = {
+				attrName: "",
+			};
+			this.searchObj = {
+				attrName: "",
+			};
+			this.handleCurrentChange(1);
+			this.getAttrList();
+		},
 		async getAttrList() {
 			//获取分类的ID
-			const { page, limit, category1Id, category2Id, category3Id } = this;
+			const { page, limit, category1Id, category2Id, category3Id, searchObj } =
+				this;
 			//获取属性列表的数据
 			let result = await this.$API.attr.reqAttrList(
 				page,
 				limit,
 				category1Id,
 				category2Id,
-				category3Id
+				category3Id,
+				searchObj
 			);
 			if (result.code == 200) {
 				this.attrList = result.data.records;
