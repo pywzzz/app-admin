@@ -25,7 +25,16 @@
 						v-for="attr in attrInfoList"
 						:key="attr.id"
 					>
-						<el-select placeholder="请选择" v-model="attr.attrIdAndValueId">
+						<el-checkbox
+							v-model="attr.checked"
+							style="margin-right: 10px"
+							@change="attr.checked ? '' : (attr.attrIdAndValueId = '')"
+						></el-checkbox>
+						<el-select
+							placeholder="请选择"
+							v-model="attr.attrIdAndValueId"
+							:disabled="!attr.checked"
+						>
 							<el-option
 								:label="attrValue.valueName"
 								:value="`${attr.id}:${attrValue.id}`"
@@ -43,7 +52,16 @@
 						v-for="saleAttr in spuSaleAttrList"
 						:key="saleAttr.id"
 					>
-						<el-select placeholder="请选择" v-model="saleAttr.attrIdAndValueId">
+						<el-checkbox
+							v-model="saleAttr.checked"
+							style="margin-right: 10px"
+							@change="saleAttr.checked ? '' : (saleAttr.attrIdAndValueId = '')"
+						></el-checkbox>
+						<el-select
+							placeholder="请选择"
+							v-model="saleAttr.attrIdAndValueId"
+							:disabled="!saleAttr.checked"
+						>
 							<el-option
 								:label="saleAttrValue.saleAttrValueName"
 								:value="`${saleAttr.id}:${saleAttrValue.id}`"
@@ -207,6 +225,8 @@ export default {
 							...saleAttrInfo,
 							// 向里面加个attrIdAndValueId字段
 							attrIdAndValueId: `${foundSaleAttr.saleAttrId}:${foundSaleAttr.saleAttrValueId}`,
+							// 向里面加个checked字段
+							checked: true,
 						};
 					} else {
 						// 如果没有找到匹配的元素，返回原始的saleAttrInfo
@@ -215,8 +235,16 @@ export default {
 				});
 			}
 			// 获取平台属性的数据
-			// 这里应该填category1、2、3的id
-			let result2 = await this.$API.spu.reqAttrInfoList(74, 75, 76);
+			let categoryIds;
+			let categoryIdResult = await this.$API.spu.reqCategoryId(skuInfo.spuId);
+			if (categoryIdResult.code == 200) {
+				categoryIds = categoryIdResult.data;
+			}
+			let result2 = await this.$API.spu.reqAttrInfoList(
+				categoryIds.category1Id,
+				categoryIds.category2Id,
+				categoryIds.category3Id
+			);
 			if (result2.code == 200) {
 				// attrInfo是result2.data数组中的元素（这个元素是一个对象）
 				this.attrInfoList = result2.data.map((attrInfo) => {
@@ -231,6 +259,8 @@ export default {
 							...attrInfo,
 							// 向里面加个attrIdAndValueId字段
 							attrIdAndValueId: `${foundAttr.attrId}:${foundAttr.valueId}`,
+							// 向里面加个checked字段
+							checked: true,
 						};
 					} else {
 						// 如果没有找到匹配的元素，返回原始的attrInfo
@@ -276,22 +306,26 @@ export default {
 			// 解构
 			const { attrInfoList, skuInfo, spuSaleAttrList, imageList } = this;
 			// 在发送请求前要先整理参数，从而迎合服务器的所需的数据的格式
-			skuInfo.skuAttrValueList = attrInfoList.reduce((prev, item) => {
-				// 用户在下拉框中选完后，才会有一个叫attrIdAndValueId的字段
-				if (item.attrIdAndValueId) {
-					const [attrId, valueId] = item.attrIdAndValueId.split(":");
-					prev.push({ attrId, valueId });
-				}
-				return prev;
-			}, []);
-			skuInfo.skuSaleAttrValueList = spuSaleAttrList.reduce((prev, item) => {
-				if (item.attrIdAndValueId) {
-					const [saleAttrId, saleAttrValueId] =
-						item.attrIdAndValueId.split(":");
-					prev.push({ saleAttrId, saleAttrValueId });
-				}
-				return prev;
-			}, []);
+			skuInfo.skuAttrValueList = attrInfoList
+				.filter((attr) => attr.checked)
+				.reduce((prev, item) => {
+					// 用户在下拉框中选完后，才会有一个叫attrIdAndValueId的字段
+					if (item.attrIdAndValueId) {
+						const [attrId, valueId] = item.attrIdAndValueId.split(":");
+						prev.push({ attrId, valueId });
+					}
+					return prev;
+				}, []);
+			skuInfo.skuSaleAttrValueList = spuSaleAttrList
+				.filter((saleAttr) => saleAttr.checked)
+				.reduce((prev, item) => {
+					if (item.attrIdAndValueId) {
+						const [saleAttrId, saleAttrValueId] =
+							item.attrIdAndValueId.split(":");
+						prev.push({ saleAttrId, saleAttrValueId });
+					}
+					return prev;
+				}, []);
 			skuInfo.skuImageList = imageList.map((item) => {
 				return {
 					imgName: item.imgName,
@@ -306,6 +340,8 @@ export default {
 				this.$message({ type: "success", message: "保存成功" });
 				// 添加成功后切一下scene
 				this.$emit("changeScene", 0);
+				// 清除数据
+				Object.assign(this._data, this.$options.data());
 				this.$parent.getSkuList();
 			}
 		},

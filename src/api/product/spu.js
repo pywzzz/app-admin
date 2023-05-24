@@ -67,7 +67,7 @@ export const reqSpuSaleAttrList = (spuId) =>
 //获取SPU这儿添加SKU时的平台属性的数据（最早在attr中用了一次这个接口）
 export const reqAttrInfoList = (category1Id, category2Id, category3Id) =>
 	request({
-		url: `/admin/product/attrInfoList/${category1Id}/${category2Id}/${category3Id}`,
+		url: `/admin/product/attrInfoListInAddSku/${category1Id}/${category2Id}/${category3Id}`,
 		method: "get",
 	});
 
@@ -78,3 +78,7 @@ export const reqAddSku = (skuInfo) =>
 //查看SKU列表数据的接口
 export const reqSkuList = (spuId) =>
 	request({ url: `/admin/product/findBySpuId/${spuId}`, method: "get" });
+
+// 根据spuId获取三级分类id
+export const reqCategoryId = (spuId) =>
+	request({ url: `/admin/product/findCategoryId/${spuId}`, method: "get" });

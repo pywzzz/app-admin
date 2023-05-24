@@ -28,6 +28,7 @@
 						<el-checkbox
 							v-model="attr.checked"
 							style="margin-right: 10px"
+							@change="attr.checked ? '' : (attr.attrIdAndValueId = '')"
 						></el-checkbox>
 						<el-select
 							placeholder="请选择"
@@ -54,6 +55,7 @@
 						<el-checkbox
 							v-model="saleAttr.checked"
 							style="margin-right: 10px"
+							@change="saleAttr.checked ? '' : (saleAttr.attrIdAndValueId = '')"
 						></el-checkbox>
 						<el-select
 							placeholder="请选择"
