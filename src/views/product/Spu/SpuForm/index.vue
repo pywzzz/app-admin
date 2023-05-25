@@ -40,7 +40,7 @@
 			<el-form-item label="销售属性">
 				<!-- v-model可以收集的是下拉框中的value属性的数据 -->
 				<el-select
-					:placeholder="`还有${unSelectSaleAttr.length}未选择`"
+					:placeholder="`还有${unSelectSaleAttr.length}个销售属性可选择`"
 					v-model="attrIdAndAttrName"
 				>
 					<el-option

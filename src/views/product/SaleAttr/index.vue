@@ -195,6 +195,12 @@ export default {
 			this.category1Id = 0;
 			this.category2Id = 0;
 			this.category3Id = 0;
+			this.tempSearchObj = {
+				saleAttrName: "",
+			};
+			this.searchObj = {
+				saleAttrName: "",
+			};
 			this.getSaleAttrs();
 			if (this.resetMethodFromChild) {
 				this.resetMethodFromChild();

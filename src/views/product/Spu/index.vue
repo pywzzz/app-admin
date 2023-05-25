@@ -217,6 +217,12 @@ export default {
 			this.category1Id = 0;
 			this.category2Id = 0;
 			this.category3Id = 0;
+			this.tempSearchObj = {
+				spuName: "",
+			};
+			this.searchObj = {
+				spuName: "",
+			};
 			this.getSpuList();
 			if (this.resetMethodFromChild) {
 				this.resetMethodFromChild();

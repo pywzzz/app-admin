@@ -325,7 +325,11 @@ export default {
 		},
 		// 删除所有选中的用户
 		revomveUsers() {
-			this.$confirm("确定删除吗?")
+			this.$confirm("确认删除所选用户吗?", "提示", {
+				type: "warning",
+				confirmButtonText: "确定",
+				cancelButtonText: "取消",
+			})
 				.then(async () => {
 					await this.$API.user.removeUsers(this.selectedIds);
 					this.$message.success("删除成功");

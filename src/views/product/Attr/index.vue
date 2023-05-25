@@ -308,6 +308,12 @@ export default {
 			this.category1Id = 0;
 			this.category2Id = 0;
 			this.category3Id = 0;
+			this.tempSearchObj = {
+				attrName: "",
+			};
+			this.searchObj = {
+				attrName: "",
+			};
 			this.handleCurrentChange(1);
 			this.getAttrList();
 			if (this.resetMethodFromChild) {

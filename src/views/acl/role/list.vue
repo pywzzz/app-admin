@@ -239,8 +239,10 @@ export default {
 		},
 		// 批量删除
 		removeRoles() {
-			this.$confirm("此操作将永久删除该记录, 是否继续?", "提示", {
+			this.$confirm("确认删除所选角色吗?", "提示", {
 				type: "warning",
+				confirmButtonText: "确定",
+				cancelButtonText: "取消",
 			})
 				.then(async () => {
 					const ids = this.selectedRoles.map((role) => role.id);
