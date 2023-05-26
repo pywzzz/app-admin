@@ -1,5 +1,20 @@
 <template>
 	<div>
+		<el-card style="margin: 20px 0px">
+			<div style="display: flex">
+				<!-- 三级列表 -->
+				<CategorySelect
+					@getCategoryId="getCategoryId"
+					@resetMethod="receiveResetMethod"
+				></CategorySelect>
+				<el-button
+					type="primary"
+					@click="resetCategoryId"
+					style="margin-bottom: 20px; margin-left: 40px"
+					>查看所有品牌</el-button
+				>
+			</div>
+		</el-card>
 		<el-form inline>
 			<el-form-item>
 				<el-input
@@ -19,6 +34,7 @@
 			icon="el-icon-plus"
 			style="margin: 10px 0px"
 			@click="showDialog"
+			:disabled="!category3Id"
 			>添加</el-button
 		>
 
@@ -182,6 +198,10 @@ export default {
 			}
 		};
 		return {
+			// 各级列表的id
+			category1Id: 0,
+			category2Id: 0,
+			category3Id: 0,
 			// 当前第几页
 			page: 1,
 			// 一页展示多少数据
@@ -227,11 +247,15 @@ export default {
 	},
 	methods: {
 		async getPageList() {
-			const { page, limit, searchObj } = this;
+			const { page, limit, searchObj, category1Id, category2Id, category3Id } =
+				this;
 			let result = await this.$API.trademark.reqTrademarkList(
 				page,
 				limit,
-				searchObj
+				category1Id,
+				category2Id,
+				category3Id,
+				searchObj.trademarkName
 			);
 			if (result.code == 200) {
 				this.total = result.data.total;
@@ -245,6 +269,44 @@ export default {
 		handleSizeChange(limit) {
 			this.limit = limit;
 			this.getPageList();
+		},
+		//用于子组件CategorySelect向父组件Sku传参
+		getCategoryId({ categoryId, level }) {
+			if (level == 1) {
+				this.category1Id = categoryId;
+				this.category2Id = 0;
+				this.category3Id = 0;
+				this.handleCurrentChange(1);
+				this.getPageList();
+			} else if (level == 2) {
+				this.category2Id = categoryId;
+				this.category3Id = 0;
+				this.handleCurrentChange(1);
+				this.getPageList();
+			} else {
+				this.category3Id = categoryId;
+				this.handleCurrentChange(1);
+				this.getPageList();
+			}
+		},
+		receiveResetMethod(resetMethod) {
+			this.resetMethodFromChild = resetMethod;
+		},
+		resetCategoryId() {
+			this.category1Id = 0;
+			this.category2Id = 0;
+			this.category3Id = 0;
+			this.tempSearchObj = {
+				trademarkName: "",
+			};
+			this.searchObj = {
+				trademarkName: "",
+			};
+			this.handleCurrentChange(1);
+			this.getPageList();
+			if (this.resetMethodFromChild) {
+				this.resetMethodFromChild();
+			}
 		},
 		// 根据搜索条件进行搜索
 		search() {
@@ -267,7 +329,13 @@ export default {
 		showDialog() {
 			this.dialogFormVisible = true;
 			// 每次添加之前应把之前的数据清空
-			this.tmForm = { tmName: "", logoUrl: "" };
+			this.tmForm = {
+				tmName: "",
+				logoUrl: "",
+				category1Id: this.category1Id,
+				category2Id: this.category2Id,
+				category3Id: this.category3Id,
+			};
 		},
 		// “品牌管理”中“修改”按钮的回调
 		// row这个参数包含着用户选中的那个商品的信息，id、tmName啥的
