@@ -449,20 +449,29 @@ export default {
 		},
 		// 查看一个品牌中含有的所有SPU
 		async getAllSpuInTrademark(row) {
-			// 点击后显示对话框
-			this.dialogTableVisible = true;
-			// 存一下对话框标题
-			this.spuListTitle = row.tmName;
-			// 获取品牌的信息
-			let tradeMarkResult = await this.$API.spu.reqTradeMarkList();
-			if (tradeMarkResult.code == 200) {
-				this.tradeMarkList = tradeMarkResult.data;
-			}
-			// 传入的是品牌的id
-			let result = await this.$API.trademark.reqSpuList(row.id);
-			if (result.code == 200) {
-				this.spuList = result.data;
-				this.loading = false;
+			if (this.category3Id != 0) {
+				// 点击后显示对话框
+				this.dialogTableVisible = true;
+				// 存一下对话框标题
+				this.spuListTitle = row.tmName;
+				// 获取品牌的信息
+				let tradeMarkResult = await this.$API.spu.reqTradeMarkList(
+					this.category3Id
+				);
+				if (tradeMarkResult.code == 200) {
+					this.tradeMarkList = tradeMarkResult.data;
+				}
+				// 传入的是品牌的id
+				let result = await this.$API.trademark.reqSpuList(row.id);
+				if (result.code == 200) {
+					this.spuList = result.data;
+					this.loading = false;
+				}
+			} else {
+				this.$message({
+					type: "warning",
+					message: "请先选择三级分类列表",
+				});
 			}
 		},
 		// 关闭对话框时执这个
