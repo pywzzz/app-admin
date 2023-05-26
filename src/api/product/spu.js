@@ -20,9 +20,9 @@ export const reqSpu = (spuId) =>
 	request({ url: `/admin/product/getSpuById/${spuId}`, method: "get" });
 
 //获取品牌的信息
-export const reqTradeMarkList = () =>
+export const reqTradeMarkList = (category3Id) =>
 	request({
-		url: `/admin/product/baseTrademark/getTrademarkList`,
+		url: `/admin/product/baseTrademark/getTrademarkList/${category3Id}`,
 		method: "get",
 	});
 

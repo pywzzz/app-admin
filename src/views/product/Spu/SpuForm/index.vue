@@ -180,7 +180,9 @@ export default {
 				this.spu = spuResult.data;
 			}
 			// 获取品牌的信息
-			let tradeMarkResult = await this.$API.spu.reqTradeMarkList();
+			let tradeMarkResult = await this.$API.spu.reqTradeMarkList(
+				this.spu.category3Id
+			);
 			if (tradeMarkResult.code == 200) {
 				this.tradeMarkList = tradeMarkResult.data;
 			}
@@ -291,7 +293,7 @@ export default {
 			// 添加SPU的时候收集三级分类的id（这个是父组件传过来的）
 			this.spu.category3Id = category3Id;
 			// 获取品牌的信息
-			let tradeMarkResult = await this.$API.spu.reqTradeMarkList();
+			let tradeMarkResult = await this.$API.spu.reqTradeMarkList(category3Id);
 			if (tradeMarkResult.code == 200) {
 				this.tradeMarkList = tradeMarkResult.data;
 			}
