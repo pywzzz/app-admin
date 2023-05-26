@@ -1,11 +1,18 @@
 import request from "@/utils/request";
 
 //获取SPU列表中的数据
-export const reqSkuList = (page, limit, skuName) =>
+export const reqSkuList = (
+	page,
+	limit,
+	category1Id,
+	category2Id,
+	category3Id,
+	skuName
+) =>
 	request({
 		url: `/admin/product/list/${page}/${limit}`,
 		method: "get",
-		params: { skuName },
+		params: { category1Id, category2Id, category3Id, skuName },
 	});
 
 //上架sku

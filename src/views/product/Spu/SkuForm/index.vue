@@ -130,7 +130,9 @@ export default {
 			attrInfoList: [],
 			// 收集sku数据的字段
 			skuInfo: {
-				// 这3个是父组件给的数据（总共4个。下面的spu算1个）
+				// 这5个是父组件给的数据（总共6个。下面的spu算1个）
+				category1Id: 0,
+				category2Id: 0,
 				category3Id: 0,
 				spuId: 0,
 				tmId: 0,
@@ -149,7 +151,7 @@ export default {
 				// 销售属性
 				skuSaleAttrValueList: [],
 			},
-			// 这个也是父组件给的数据（总共4个，上面有3个）
+			// 这个也是父组件给的数据（总共6个，上面有5个）
 			spu: {},
 			// 收集图片勾中的那些图片的数据
 			imageList: [],
@@ -158,6 +160,8 @@ export default {
 	methods: {
 		async getData(category1Id, category2Id, spu) {
 			// 收集父组件给予的数据
+			this.skuInfo.category1Id = spu.category1Id;
+			this.skuInfo.category2Id = spu.category2Id;
 			this.skuInfo.category3Id = spu.category3Id;
 			this.skuInfo.spuId = spu.id;
 			this.skuInfo.tmId = spu.tmId;

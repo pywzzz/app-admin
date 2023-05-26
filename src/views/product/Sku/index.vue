@@ -1,5 +1,22 @@
 <template>
 	<div>
+		<el-card style="margin: 20px 0px">
+			<div style="display: flex">
+				<!-- 三级列表 -->
+				<CategorySelect
+					@getCategoryId="getCategoryId"
+					@resetMethod="receiveResetMethod"
+					:show="scene != 0"
+				></CategorySelect>
+				<el-button
+					type="primary"
+					@click="resetCategoryId"
+					style="margin-bottom: 20px; margin-left: 40px"
+					:disabled="scene != 0"
+					>查看所有SKU</el-button
+				>
+			</div>
+		</el-card>
 		<div v-show="scene == 0">
 			<el-form inline>
 				<el-form-item>
@@ -189,6 +206,10 @@ export default {
 	},
 	data() {
 		return {
+			// 各级列表的id
+			category1Id: 0,
+			category2Id: 0,
+			category3Id: 0,
 			// 当前是第几页
 			page: 1,
 			// 一页多少条数据
@@ -223,6 +244,40 @@ export default {
 			this.limit = limit;
 			this.getSkuList();
 		},
+		//用于子组件CategorySelect向父组件Sku传参
+		getCategoryId({ categoryId, level }) {
+			if (level == 1) {
+				this.category1Id = categoryId;
+				this.category2Id = 0;
+				this.category3Id = 0;
+				this.getSkuList();
+			} else if (level == 2) {
+				this.category2Id = categoryId;
+				this.category3Id = 0;
+				this.getSkuList();
+			} else {
+				this.category3Id = categoryId;
+				this.getSkuList();
+			}
+		},
+		receiveResetMethod(resetMethod) {
+			this.resetMethodFromChild = resetMethod;
+		},
+		resetCategoryId() {
+			this.category1Id = 0;
+			this.category2Id = 0;
+			this.category3Id = 0;
+			this.tempSearchObj = {
+				skuName: "",
+			};
+			this.searchObj = {
+				skuName: "",
+			};
+			this.getSkuList();
+			if (this.resetMethodFromChild) {
+				this.resetMethodFromChild();
+			}
+		},
 		search() {
 			this.searchObj = { ...this.tempSearchObj };
 			this.getSkuList();
@@ -240,10 +295,14 @@ export default {
 		async getSkuList(pages = 1) {
 			this.page = pages;
 			// 解构出默认的参数
-			const { page, limit, searchObj } = this;
+			const { page, limit, searchObj, category1Id, category2Id, category3Id } =
+				this;
 			let result = await this.$API.sku.reqSkuList(
 				page,
 				limit,
+				category1Id,
+				category2Id,
+				category3Id,
 				searchObj.skuName
 			);
 			if (result.code == 200) {
