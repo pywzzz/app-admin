@@ -154,10 +154,10 @@
 			</el-form>
 
 			<div slot="footer">
+				<el-button @click="resetRoleData">取消</el-button>
 				<el-button :loading="loading" type="primary" @click="assignRole"
 					>保存</el-button
 				>
-				<el-button @click="resetRoleData">取消</el-button>
 			</div>
 		</el-dialog>
 	</div>
