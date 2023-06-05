@@ -139,7 +139,7 @@ export default {
 						.dispatch("user/login", this.loginForm)
 						.then(() => {
 							// 路由跳转
-							this.$router.push({ path: this.redirect || "/" });
+							this.$router.push({ path: "/" });
 							// 结束加载动画
 							this.loading = false;
 						})
